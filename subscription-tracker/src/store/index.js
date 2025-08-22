@@ -24,6 +24,19 @@ const useSubscriptionStore = create(
         isLoading: false,
         selectedSubscription: null,
 
+        // Helper method to get filtered subscriptions
+        getFilteredSubscriptions: () => {
+          const { subscriptions, activeFilters } = get();
+          return get().applyFilters(subscriptions, activeFilters);
+        },
+
+        // Method to refresh filtered subscriptions
+        refreshFilteredSubscriptions: () => {
+          const { subscriptions, activeFilters } = get();
+          const filtered = get().applyFilters(subscriptions, activeFilters);
+          set({ filteredSubscriptions: filtered });
+        },
+
         // Actions
         addSubscription: (subscriptionData) => {
           const newSubscription = {
@@ -58,10 +71,10 @@ const useSubscriptionStore = create(
 
         deleteSubscription: (id) => {
           set((state) => {
-            const filteredSubscriptions = state.subscriptions.filter(sub => sub.id !== id);
+            const updatedSubscriptions = state.subscriptions.filter(sub => sub.id !== id);
             return {
-              subscriptions: filteredSubscriptions,
-              filteredSubscriptions: get().applyFilters(filteredSubscriptions),
+              subscriptions: updatedSubscriptions,
+              filteredSubscriptions: get().applyFilters(updatedSubscriptions),
             };
           });
         },
@@ -206,8 +219,14 @@ const useSubscriptionStore = create(
 
             set(() => ({
               subscriptions: sampleSubscriptions,
-              filteredSubscriptions: sampleSubscriptions,
+              filteredSubscriptions: get().applyFilters(sampleSubscriptions),
             }));
+          } else {
+            // If subscriptions exist but filteredSubscriptions is empty, refresh it
+            const { filteredSubscriptions } = get();
+            if (filteredSubscriptions.length === 0 && subscriptions.length > 0) {
+              get().refreshFilteredSubscriptions();
+            }
           }
         },
 
@@ -221,6 +240,18 @@ const useSubscriptionStore = create(
           subscriptions: state.subscriptions,
           activeFilters: state.activeFilters,
         }),
+        onRehydrateStorage: () => (state, error) => {
+          // After rehydration, ensure filteredSubscriptions is properly set
+          if (!error && state) {
+            // Use setTimeout to ensure this runs after the store is fully initialized
+            setTimeout(() => {
+              const currentState = useSubscriptionStore.getState();
+              if (currentState.subscriptions.length > 0 && currentState.filteredSubscriptions.length === 0) {
+                currentState.refreshFilteredSubscriptions();
+              }
+            }, 0);
+          }
+        },
       }
     ),
     { name: 'subscription-tracker' }

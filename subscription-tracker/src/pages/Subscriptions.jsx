@@ -16,12 +16,14 @@ import { getCategoryLabel } from '@/types';
 
 const Subscriptions = () => {
   const {
+    subscriptions,
     filteredSubscriptions,
     activeFilters,
     setFilters,
     deleteSubscription,
     toggleSubscriptionStatus,
-    initializeSampleData
+    initializeSampleData,
+    refreshFilteredSubscriptions
   } = useSubscriptionStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,6 +34,13 @@ const Subscriptions = () => {
   useEffect(() => {
     initializeSampleData();
   }, [initializeSampleData]);
+
+  // Ensure filteredSubscriptions is updated when subscriptions change
+  useEffect(() => {
+    if (subscriptions.length > 0 && filteredSubscriptions.length === 0) {
+      refreshFilteredSubscriptions();
+    }
+  }, [subscriptions, filteredSubscriptions, refreshFilteredSubscriptions]);
 
   // Filter options
   const categoryOptions = [
