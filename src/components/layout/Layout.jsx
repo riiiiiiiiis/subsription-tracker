@@ -1,16 +1,16 @@
 import React from 'react';
 import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 import useUnifiedStore from '@/store/unified-store';
 import Header from './Header.jsx';
 import Sidebar from './Sidebar.jsx';
 
 const Layout = ({ children }) => {
   const { sidebarOpen, setSidebarOpen } = useUnifiedStore(
-    (state) => ({
+    useShallow((state) => ({
       sidebarOpen: state.ui.sidebarOpen,
       setSidebarOpen: state.setSidebarOpen,
-    }),
-    shallow
+    }))
   );
 
   return (

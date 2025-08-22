@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 import useUnifiedStore from '@/store/unified-store';
 import { Card, Button } from '@/components/ui';
 import { formatCurrency, getCategoryColor, getCategoryLabel } from '@/types';
@@ -24,14 +25,13 @@ const Dashboard = () => {
     getUpcomingPayments,
     getThisMonthPayments
   } = useUnifiedStore(
-    (state) => ({
+    useShallow((state) => ({
       subscriptions: state.data.subscriptions,
       getTotalMonthlySpending: state.getTotalMonthlySpending,
       getTotalYearlySpending: state.getTotalYearlySpending,
       getUpcomingPayments: state.getUpcomingPayments,
       getThisMonthPayments: state.getThisMonthPayments,
-    }),
-    shallow
+    }))
   );
 
   const totalMonthly = getTotalMonthlySpending();

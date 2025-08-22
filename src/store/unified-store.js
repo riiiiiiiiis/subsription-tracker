@@ -289,13 +289,63 @@ const useUnifiedStore = create(
             
             if (error) {
               console.error('❌ UnifiedStore: Error loading profile:', error);
-              set(state => ({
-                auth: { 
-                  ...state.auth, 
-                  profile: null,
-                  error: `Profile load error: ${error.message}`
+              
+              // If profile doesn't exist (PGRST116), create one
+              if (error.code === 'PGRST116') {
+                console.log('📝 UnifiedStore: Profile not found, creating default profile...');
+                try {
+                  const { auth: { user } } = get();
+                  const fallbackProfile = {
+                    id: userId,
+                    email: user?.email || '',
+                    full_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User',
+                    preferences: {}
+                  };
+                  
+                  const { data: newProfile, error: createError } = await supabase
+                    .from('profiles')
+                    .insert(fallbackProfile)
+                    .select()
+                    .single();
+                  
+                  if (createError) {
+                    console.error('❌ UnifiedStore: Error creating fallback profile:', createError);
+                    set(state => ({
+                      auth: { 
+                        ...state.auth, 
+                        profile: null,
+                        error: `Profile creation error: ${createError.message}`
+                      }
+                    }));
+                  } else {
+                    console.log('✅ UnifiedStore: Fallback profile created:', newProfile);
+                    set(state => ({
+                      auth: { 
+                        ...state.auth, 
+                        profile: newProfile,
+                        error: null
+                      }
+                    }));
+                  }
+                } catch (createError) {
+                  console.error('💥 UnifiedStore: Unexpected error creating profile:', createError);
+                  set(state => ({
+                    auth: { 
+                      ...state.auth, 
+                      profile: null,
+                      error: `Profile creation error: ${createError.message}`
+                    }
+                  }));
                 }
-              }));
+              } else {
+                set(state => ({
+                  auth: { 
+                    ...state.auth, 
+                    profile: null,
+                    error: `Profile load error: ${error.message}`
+                  }
+                }));
+              }
             } else {
               console.log('✅ UnifiedStore: Profile loaded:', data);
               set(state => ({

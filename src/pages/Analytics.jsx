@@ -19,6 +19,7 @@ import {
   ResponsiveContainer 
 } from 'recharts';
 import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 import useUnifiedStore from '@/store/unified-store';
 import { Card } from '@/components/ui';
 import { 
@@ -36,14 +37,13 @@ const Analytics = () => {
     getSpendingByCategory,
     getUpcomingPayments
   } = useUnifiedStore(
-    (state) => ({
+    useShallow((state) => ({
       subscriptions: state.data.subscriptions,
       getTotalMonthlySpending: state.getTotalMonthlySpending,
       getTotalYearlySpending: state.getTotalYearlySpending,
       getSpendingByCategory: state.getSpendingByCategory,
       getUpcomingPayments: state.getUpcomingPayments,
-    }),
-    shallow
+    }))
   );
 
   const totalMonthly = getTotalMonthlySpending();

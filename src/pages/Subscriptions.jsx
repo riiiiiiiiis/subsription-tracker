@@ -9,6 +9,7 @@ import {
   SortDesc 
 } from 'lucide-react';
 import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 import useUnifiedStore from '@/store/unified-store';
 import { Button, Input, Select, Card } from '@/components/ui';
 import SubscriptionCard from '../components/SubscriptionCard.jsx';
@@ -26,7 +27,7 @@ const Subscriptions = () => {
     toggleSubscriptionStatus,
     applyFilters
   } = useUnifiedStore(
-    (state) => ({
+    useShallow((state) => ({
       subscriptions: state.data.subscriptions,
       filteredSubscriptions: state.data.filteredSubscriptions,
       filters: state.filters,
@@ -34,8 +35,7 @@ const Subscriptions = () => {
       deleteSubscription: state.deleteSubscription,
       toggleSubscriptionStatus: state.toggleSubscriptionStatus,
       applyFilters: state.applyFilters,
-    }),
-    shallow
+    }))
   );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
