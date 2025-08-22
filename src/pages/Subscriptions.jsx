@@ -22,7 +22,6 @@ const Subscriptions = () => {
     setFilters,
     deleteSubscription,
     toggleSubscriptionStatus,
-    initializeSampleData,
     refreshFilteredSubscriptions
   } = useSubscriptionStore();
 
@@ -30,10 +29,6 @@ const Subscriptions = () => {
   const [editingSubscription, setEditingSubscription] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
-
-  useEffect(() => {
-    initializeSampleData();
-  }, [initializeSampleData]);
 
   // Ensure filteredSubscriptions is updated when subscriptions change
   useEffect(() => {

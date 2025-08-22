@@ -308,6 +308,14 @@ const useSubscriptionStore = create(
         return filtered;
       },
 
+      // Refresh filtered subscriptions manually
+      refreshFilteredSubscriptions: () => {
+        const { subscriptions } = get();
+        set({
+          filteredSubscriptions: get().applyFilters(subscriptions)
+        });
+      },
+
       // Analytics getters
       getTotalMonthlySpending: () => {
         const { subscriptions } = get();

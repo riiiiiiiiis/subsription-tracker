@@ -20,13 +20,8 @@ const Dashboard = () => {
     getTotalMonthlySpending,
     getTotalYearlySpending,
     getUpcomingPayments,
-    getThisMonthPayments,
-    initializeSampleData
+    getThisMonthPayments
   } = useSubscriptionStore();
-
-  useEffect(() => {
-    initializeSampleData();
-  }, [initializeSampleData]);
 
   const totalMonthly = getTotalMonthlySpending();
   const totalYearly = getTotalYearlySpending();

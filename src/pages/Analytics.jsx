@@ -32,13 +32,8 @@ const Analytics = () => {
     getTotalMonthlySpending,
     getTotalYearlySpending,
     getSpendingByCategory,
-    getUpcomingPayments,
-    initializeSampleData
+    getUpcomingPayments
   } = useSubscriptionStore();
-
-  useEffect(() => {
-    initializeSampleData();
-  }, [initializeSampleData]);
 
   const totalMonthly = getTotalMonthlySpending();
   const totalYearly = getTotalYearlySpending();

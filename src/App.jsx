@@ -8,6 +8,7 @@ import Subscriptions from './pages/Subscriptions.jsx';
 import Analytics from './pages/Analytics.jsx';
 import Settings from './pages/Settings.jsx';
 import AuthPage from './pages/AuthPage.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { useStoreInit } from './hooks/useStoreInit.js';
 import './App.css';
 
@@ -16,33 +17,35 @@ function App() {
   useStoreInit();
   
   return (
-    <AuthProvider>
-      <Router 
-        future={{
-          v7_startTransition: true,
-          v7_relativeSplatPath: true
-        }}
-      >
-        <Routes>
-          {/* Public route for authentication */}
-          <Route path="/auth" element={<AuthPage />} />
-          
-          {/* Protected routes */}
-          <Route path="/*" element={
-            <ProtectedRoute>
-              <Layout>
-                <Routes>
-                  <Route path="/" element={<Dashboard />} />
-                  <Route path="/subscriptions" element={<Subscriptions />} />
-                  <Route path="/analytics" element={<Analytics />} />
-                  <Route path="/settings" element={<Settings />} />
-                </Routes>
-              </Layout>
-            </ProtectedRoute>
-          } />
-        </Routes>
-      </Router>
-    </AuthProvider>
+    <ErrorBoundary>
+      <AuthProvider>
+        <Router 
+          future={{
+            v7_startTransition: true,
+            v7_relativeSplatPath: true
+          }}
+        >
+          <Routes>
+            {/* Public route for authentication */}
+            <Route path="/auth" element={<AuthPage />} />
+            
+            {/* Protected routes */}
+            <Route path="/*" element={
+              <ProtectedRoute>
+                <Layout>
+                  <Routes>
+                    <Route path="/" element={<Dashboard />} />
+                    <Route path="/subscriptions" element={<Subscriptions />} />
+                    <Route path="/analytics" element={<Analytics />} />
+                    <Route path="/settings" element={<Settings />} />
+                  </Routes>
+                </Layout>
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </Router>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 
