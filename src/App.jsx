@@ -29,7 +29,7 @@ function App() {
             v7_relativeSplatPath: true
           }}
         >
-          <Suspense fallback={<Loading text="Loading page..." />}>
+          <Suspense fallback={<Loading text="Загрузка страницы..." />}>
             <Routes>
               {/* Public route for authentication */}
               <Route path="/auth" element={<AuthPage />} />
@@ -38,7 +38,7 @@ function App() {
               <Route path="/*" element={
                 <ProtectedRoute>
                   <Layout>
-                    <Suspense fallback={<Loading text="Loading content..." />}>
+                    <Suspense fallback={<Loading text="Загрузка контента..." />}>
                       <Routes>
                         <Route path="/" element={<Dashboard />} />
                         <Route path="/subscriptions" element={<Subscriptions />} />

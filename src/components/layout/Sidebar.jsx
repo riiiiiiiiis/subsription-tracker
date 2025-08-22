@@ -13,10 +13,10 @@ const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-    { name: 'Subscriptions', href: '/subscriptions', icon: CreditCard },
-    { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-    { name: 'Settings', href: '/settings', icon: Settings },
+    { name: 'Главная', href: '/', icon: LayoutDashboard },
+    { name: 'Подписки', href: '/subscriptions', icon: CreditCard },
+    { name: 'Аналитика', href: '/analytics', icon: BarChart3 },
+    { name: 'Настройки', href: '/settings', icon: Settings },
   ];
 
   const isActive = (path) => {

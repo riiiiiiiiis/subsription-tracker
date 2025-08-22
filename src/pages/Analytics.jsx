@@ -18,14 +18,13 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
-import { shallow } from 'zustand/shallow';
 import { useShallow } from 'zustand/react/shallow';
 import useUnifiedStore from '@/store/unified-store';
 import { Card } from '@/components/ui';
-import { 
-  formatCurrency, 
-  getCategoryLabel, 
-  getCategoryColor 
+import {
+  formatCurrency,
+  getCategoryLabel,
+  getCategoryColor
 } from '@/types';
 
 const Analytics = () => {
@@ -81,8 +80,8 @@ const Analytics = () => {
     if (totalMonthly > 100) {
       insights.push({
         type: 'warning',
-        title: 'High Monthly Spending',
-        description: `You're spending ${formatCurrency(totalMonthly)} monthly. Consider reviewing your subscriptions.`,
+        title: 'Высокие месячные расходы',
+        description: `Вы тратите ${formatCurrency(totalMonthly)} в месяц. Рассмотрите возможность пересмотра подписок.`,
         icon: TrendingUp,
         color: 'text-orange-600 bg-orange-50'
       });
@@ -94,8 +93,8 @@ const Analytics = () => {
     if (highestCategory && highestCategory.percentage > 40) {
       insights.push({
         type: 'info',
-        title: 'Category Dominance',
-        description: `${getCategoryLabel(highestCategory.category)} accounts for ${highestCategory.percentage.toFixed(1)}% of your spending.`,
+        title: 'Доминирование категории',
+        description: `${getCategoryLabel(highestCategory.category)} составляет ${highestCategory.percentage.toFixed(1)}% ваших расходов.`,
         icon: PieChart,
         color: 'text-blue-600 bg-blue-50'
       });
@@ -104,8 +103,8 @@ const Analytics = () => {
     if (upcomingPayments.length > 3) {
       insights.push({
         type: 'info',
-        title: 'Multiple Upcoming Payments',
-        description: `You have ${upcomingPayments.length} payments due in the next 30 days.`,
+        title: 'Несколько предстоящих платежей',
+        description: `У вас ${upcomingPayments.length} платежей в ближайшие 30 дней.`,
         icon: Calendar,
         color: 'text-purple-600 bg-purple-50'
       });
@@ -143,9 +142,9 @@ const Analytics = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Analytics</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Аналитика</h1>
         <p className="text-gray-600 mt-1">
-          Insights into your subscription spending
+          Аналитика ваших расходов на подписки
         </p>
       </div>
 
@@ -157,12 +156,12 @@ const Analytics = () => {
               <DollarSign className="h-6 w-6 text-green-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Monthly Total</p>
+              <p className="text-sm font-medium text-gray-600">Ежемесячно</p>
               <p className="text-2xl font-semibold text-gray-900">
                 {formatCurrency(totalMonthly)}
               </p>
               <p className="text-sm text-gray-500">
-                {formatCurrency(totalYearly)} yearly
+                {formatCurrency(totalYearly)} в год
               </p>
             </div>
           </div>
@@ -174,12 +173,12 @@ const Analytics = () => {
               <TrendingUp className="h-6 w-6 text-blue-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Average per Service</p>
+              <p className="text-sm font-medium text-gray-600">Средняя стоимость услуги</p>
               <p className="text-2xl font-semibold text-gray-900">
                 {formatCurrency(averagePerSubscription)}
               </p>
               <p className="text-sm text-gray-500">
-                {activeSubscriptions.length} active services
+                {activeSubscriptions.length} активных сервисов
               </p>
             </div>
           </div>
@@ -191,12 +190,12 @@ const Analytics = () => {
               <Calendar className="h-6 w-6 text-purple-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Next 30 Days</p>
+              <p className="text-sm font-medium text-gray-600">Следующие 30 дней</p>
               <p className="text-2xl font-semibold text-gray-900">
                 {upcomingPayments.length}
               </p>
               <p className="text-sm text-gray-500">
-                payments due
+                предстоящих платежей
               </p>
             </div>
           </div>
@@ -208,7 +207,7 @@ const Analytics = () => {
         {/* Spending by Category */}
         <Card className="p-6">
           <Card.Header>
-            <Card.Title>Spending by Category</Card.Title>
+            <Card.Title>Расходы по категориям</Card.Title>
           </Card.Header>
           <Card.Content>
             {categorySpending.length > 0 ? (
@@ -265,7 +264,7 @@ const Analytics = () => {
             ) : (
               <div className="text-center py-8 text-gray-500">
                 <PieChart className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                <p>No spending data available</p>
+                <p>Данные о расходах недоступны</p>
               </div>
             )}
           </Card.Content>
@@ -274,7 +273,7 @@ const Analytics = () => {
         {/* Monthly Trend */}
         <Card className="p-6">
           <Card.Header>
-            <Card.Title>Monthly Spending Trend</Card.Title>
+            <Card.Title>Тренд месячных расходов</Card.Title>
           </Card.Header>
           <Card.Content>
             <div className="h-64">
@@ -296,7 +295,7 @@ const Analytics = () => {
       {insights.length > 0 && (
         <Card className="p-6">
           <Card.Header>
-            <Card.Title>Spending Insights</Card.Title>
+            <Card.Title>Анализ расходов</Card.Title>
           </Card.Header>
           <Card.Content>
             <div className="space-y-4">
@@ -323,7 +322,7 @@ const Analytics = () => {
       {upcomingPayments.length > 0 && (
         <Card className="p-6">
           <Card.Header>
-            <Card.Title>Upcoming Payments (Next 30 Days)</Card.Title>
+            <Card.Title>Ближайшие платежи (30 дней)</Card.Title>
           </Card.Header>
           <Card.Content>
             <div className="space-y-3">
@@ -336,7 +335,7 @@ const Analytics = () => {
                         {payment.subscriptionName}
                       </p>
                       <p className="text-sm text-gray-500">
-                        Due: {new Date(payment.dueDate).toLocaleDateString()}
+                        К оплате: {new Date(payment.dueDate).toLocaleDateString()}
                       </p>
                     </div>
                   </div>

@@ -37,7 +37,7 @@ const SubscriptionCard = ({
   };
 
   const handleDelete = () => {
-    if (window.confirm(`Are you sure you want to delete "${subscription.name}"?`)) {
+    if (window.confirm(`Вы уверены, что хотите удалить "${subscription.name}"?`)) {
       onDelete(subscription.id);
     }
   };
@@ -75,7 +75,7 @@ const SubscriptionCard = ({
                 size="sm"
                 onClick={handleWebsiteClick}
                 className="p-1"
-                title="Visit website"
+                title="Перейти на сайт"
               >
                 <ExternalLink className="h-4 w-4" />
               </Button>
@@ -85,7 +85,7 @@ const SubscriptionCard = ({
               size="sm"
               onClick={handleToggleActive}
               className="p-1"
-              title={subscription.isActive ? 'Deactivate' : 'Activate'}
+              title={subscription.isActive ? 'Деактивировать' : 'Активировать'}
             >
               {subscription.isActive ? (
                 <ToggleRight className="h-4 w-4 text-green-500" />
@@ -98,7 +98,7 @@ const SubscriptionCard = ({
               size="sm"
               onClick={handleEdit}
               className="p-1"
-              title="Edit subscription"
+              title="Редактировать подписку"
             >
               <Edit3 className="h-4 w-4" />
             </Button>
@@ -107,7 +107,7 @@ const SubscriptionCard = ({
               size="sm"
               onClick={handleDelete}
               className="p-1 text-red-600 hover:text-red-700 hover:bg-red-50"
-              title="Delete subscription"
+              title="Удалить подписку"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -121,12 +121,12 @@ const SubscriptionCard = ({
               {formatCurrency(subscription.amount, subscription.currency)}
             </span>
             <span className="text-gray-500 text-sm">
-              per {subscription.billingCycle}
+              за {getBillingCycleLabel(subscription.billingCycle)}
             </span>
           </div>
           {subscription.billingCycle !== 'monthly' && (
             <p className="text-sm text-gray-500 mt-1">
-              ~{formatCurrency(monthlyAmount, subscription.currency)} monthly
+              ~{formatCurrency(monthlyAmount, subscription.currency)} в месяц
             </p>
           )}
         </div>
@@ -138,7 +138,7 @@ const SubscriptionCard = ({
               {getCategoryLabel(subscription.category)}
             </span>
             <span className={`text-xs px-2 py-1 rounded ${subscription.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
-              {subscription.isActive ? 'Active' : 'Inactive'}
+              {subscription.isActive ? 'Активна' : 'Неактивна'}
             </span>
           </div>
           
@@ -146,7 +146,7 @@ const SubscriptionCard = ({
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <Calendar className="h-4 w-4" />
               <span>
-                Next payment: {format(new Date(subscription.nextPaymentDate), 'MMM dd, yyyy')}
+                Следующий платеж: {format(new Date(subscription.nextPaymentDate), 'MMM dd, yyyy')}
               </span>
             </div>
           )}
