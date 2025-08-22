@@ -4,6 +4,7 @@ import { supabase } from '../../lib/supabase.js';
 // Create authentication context
 const AuthContext = createContext({
   user: null,
+  profile: null,
   session: null,
   loading: true,
   error: null,
@@ -11,6 +12,7 @@ const AuthContext = createContext({
   signUp: () => {},
   signOut: () => {},
   resetPassword: () => {},
+  fetchUserProfile: () => {},
 });
 
 // Custom hook to use authentication context
@@ -25,19 +27,50 @@ export const useAuth = () => {
 // AuthProvider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Fetch user profile data
+  const fetchUserProfile = async (userId) => {
+    if (!userId) {
+      setProfile(null);
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        console.error('Error fetching profile:', error);
+        setProfile(null);
+      } else {
+        setProfile(data);
+      }
+    } catch (error) {
+      console.error('Unexpected error fetching profile:', error);
+      setProfile(null);
+    }
+  };
+
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
+    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
       if (error) {
         console.error('Error getting session:', error);
         setError(error);
       } else {
         setSession(session);
         setUser(session?.user ?? null);
+        // Fetch profile data if user exists
+        if (session?.user) {
+          await fetchUserProfile(session.user.id);
+        }
       }
       setLoading(false);
     });
@@ -52,6 +85,13 @@ export const AuthProvider = ({ children }) => {
       setUser(session?.user ?? null);
       setLoading(false);
       setError(null);
+
+      // Fetch profile data when user signs in or session changes
+      if (session?.user) {
+        await fetchUserProfile(session.user.id);
+      } else {
+        setProfile(null);
+      }
 
       // Handle specific auth events
       switch (event) {
@@ -72,8 +112,40 @@ export const AuthProvider = ({ children }) => {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+    };
   }, []);
+
+  // Set up real-time subscription for profile changes
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const profileSubscription = supabase
+      .channel(`profiles:${user.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${user.id}`,
+        },
+        (payload) => {
+          console.log('Profile change received:', payload);
+          if (payload.eventType === 'UPDATE' || payload.eventType === 'INSERT') {
+            setProfile(payload.new);
+          } else if (payload.eventType === 'DELETE') {
+            setProfile(null);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      profileSubscription.unsubscribe();
+    };
+  }, [user?.id]);
 
   // Authentication methods
   const signIn = async (email, password) => {
@@ -174,6 +246,7 @@ export const AuthProvider = ({ children }) => {
   // Context value
   const value = {
     user,
+    profile,
     session,
     loading,
     error,
@@ -181,6 +254,7 @@ export const AuthProvider = ({ children }) => {
     signUp,
     signOut,
     resetPassword,
+    fetchUserProfile,
   };
 
   return (

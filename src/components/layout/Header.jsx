@@ -15,9 +15,17 @@ import { useAuth } from '../auth/AuthProvider.jsx';
 
 const Header = ({ isSidebarOpen, setSidebarOpen }) => {
   const location = useLocation();
-  const { user, signOut, loading } = useAuth();
+  const { user, profile, signOut, loading } = useAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);
+
+  // Get display name from profile or fallback to email
+  const getDisplayName = () => {
+    if (profile?.full_name) {
+      return profile.full_name;
+    }
+    return user?.email?.split('@')[0] || 'User';
+  };
 
   const handleSignOut = async () => {
     try {
@@ -122,7 +130,7 @@ const Header = ({ isSidebarOpen, setSidebarOpen }) => {
             >
               <User className="h-4 w-4" />
               <span className="hidden sm:block">
-                {user?.email?.split('@')[0] || 'User'}
+                {getDisplayName()}
               </span>
             </Button>
 
@@ -132,7 +140,7 @@ const Header = ({ isSidebarOpen, setSidebarOpen }) => {
                 <div className="py-2">
                   <div className="px-4 py-2 border-b border-gray-100">
                     <p className="text-sm font-medium text-gray-900">
-                      {user?.email?.split('@')[0] || 'User'}
+                      {getDisplayName()}
                     </p>
                     <p className="text-xs text-gray-500 truncate">
                       {user?.email}
