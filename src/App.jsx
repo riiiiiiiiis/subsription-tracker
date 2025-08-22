@@ -1,24 +1,25 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './components/auth/AuthProvider.jsx';
+import { Analytics } from '@vercel/analytics/react';
+import { UnifiedAuthProvider } from './components/auth/UnifiedAuthProvider.jsx';
 import ProtectedRoute from './components/auth/ProtectedRoute.jsx';
 import Layout from './components/layout/Layout.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Subscriptions from './pages/Subscriptions.jsx';
-import Analytics from './pages/Analytics.jsx';
+import AnalyticsPage from './pages/Analytics.jsx';
 import Settings from './pages/Settings.jsx';
 import AuthPage from './pages/AuthPage.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
-import { useStoreInit } from './hooks/useStoreInit.js';
+import { useUnifiedStoreInit } from './hooks/useUnifiedStoreInit.js';
 import './App.css';
 
 function App() {
-  // Initialize the store with Supabase integration
-  useStoreInit();
+  // Initialize the unified store with Supabase integration
+  useUnifiedStoreInit();
   
   return (
     <ErrorBoundary>
-      <AuthProvider>
+      <UnifiedAuthProvider>
         <Router 
           future={{
             v7_startTransition: true,
@@ -36,7 +37,7 @@ function App() {
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/subscriptions" element={<Subscriptions />} />
-                    <Route path="/analytics" element={<Analytics />} />
+                    <Route path="/analytics" element={<AnalyticsPage />} />
                     <Route path="/settings" element={<Settings />} />
                     {/* Catch-all route for 404 handling */}
                     <Route path="*" element={<Navigate to="/" replace />} />
@@ -46,7 +47,8 @@ function App() {
             } />
           </Routes>
         </Router>
-      </AuthProvider>
+      </UnifiedAuthProvider>
+      <Analytics />
     </ErrorBoundary>
   );
 }
