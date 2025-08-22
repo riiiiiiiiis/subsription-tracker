@@ -81,18 +81,14 @@ const Header = () => {
   }, []);
 
   const navigation = [
-    { name: 'Главная', href: '/', icon: LayoutDashboard },
+    { name: 'Главная', href: '/dashboard', icon: LayoutDashboard },
     { name: 'Подписки', href: '/subscriptions', icon: CreditCard },
     { name: 'Аналитика', href: '/analytics', icon: BarChart3 },
     { name: 'Настройки', href: '/settings', icon: Settings },
   ];
 
-  const isActive = (path) => {
-    if (path === '/') {
-      return location.pathname === '/';
-    }
-    return location.pathname.startsWith(path);
-  };
+  const isActive = (path) =>
+    location.pathname === path || location.pathname.startsWith(path);
 
   return (
     <header className="bg-white border-b border-gray-200 px-4 py-3 lg:px-6">
@@ -113,7 +109,7 @@ const Header = () => {
           </Button>
 
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/dashboard" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
               <CreditCard className="h-4 w-4 text-white" />
             </div>

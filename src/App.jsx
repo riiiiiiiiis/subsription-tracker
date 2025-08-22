@@ -15,6 +15,7 @@ const Subscriptions = lazy(() => import('./pages/Subscriptions.jsx'));
 const AnalyticsPage = lazy(() => import('./pages/Analytics.jsx'));
 const Settings = lazy(() => import('./pages/Settings.jsx'));
 const AuthPage = lazy(() => import('./pages/AuthPage.jsx'));
+const LandingPage = lazy(() => import('./pages/Landing.jsx'));
 
 function App() {
   // Initialize the unified store with Supabase integration
@@ -31,26 +32,32 @@ function App() {
         >
           <Suspense fallback={<Loading text="Загрузка страницы..." />}>
             <Routes>
+              {/* Public landing page */}
+              <Route path="/" element={<LandingPage />} />
+
               {/* Public route for authentication */}
               <Route path="/auth" element={<AuthPage />} />
-              
+
               {/* Protected routes */}
-              <Route path="/*" element={
-                <ProtectedRoute>
-                  <Layout>
-                    <Suspense fallback={<Loading text="Загрузка контента..." />}>
-                      <Routes>
-                        <Route path="/" element={<Dashboard />} />
-                        <Route path="/subscriptions" element={<Subscriptions />} />
-                        <Route path="/analytics" element={<AnalyticsPage />} />
-                        <Route path="/settings" element={<Settings />} />
-                        {/* Catch-all route for 404 handling */}
-                        <Route path="*" element={<Navigate to="/" replace />} />
-                      </Routes>
-                    </Suspense>
-                  </Layout>
-                </ProtectedRoute>
-              } />
+              <Route
+                path="/*"
+                element={
+                  <ProtectedRoute>
+                    <Layout>
+                      <Suspense fallback={<Loading text="Загрузка контента..." />}> 
+                        <Routes>
+                          <Route path="/dashboard" element={<Dashboard />} />
+                          <Route path="/subscriptions" element={<Subscriptions />} />
+                          <Route path="/analytics" element={<AnalyticsPage />} />
+                          <Route path="/settings" element={<Settings />} />
+                          {/* Catch-all route for 404 handling */}
+                          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                        </Routes>
+                      </Suspense>
+                    </Layout>
+                  </ProtectedRoute>
+                }
+              />
             </Routes>
           </Suspense>
         </Router>
