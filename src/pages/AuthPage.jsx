@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../components/auth/AuthProvider.jsx';
+import { useUnifiedAuth } from '../components/auth/UnifiedAuthProvider.jsx';
 import AuthForm from '../components/AuthForm.jsx';
 
 const AuthPage = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user, loading } = useUnifiedAuth();
 
   // Redirect if user is already authenticated
   useEffect(() => {

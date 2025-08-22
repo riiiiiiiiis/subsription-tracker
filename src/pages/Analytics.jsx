@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { 
   DollarSign, 
   TrendingUp, 
@@ -18,6 +18,7 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
+import { shallow } from 'zustand/shallow';
 import useUnifiedStore from '@/store/unified-store';
 import { Card } from '@/components/ui';
 import { 
@@ -27,12 +28,23 @@ import {
 } from '@/types';
 
 const Analytics = () => {
-  // Use unified store
-  const subscriptions = useUnifiedStore(state => state.data.subscriptions);
-  const getTotalMonthlySpending = useUnifiedStore(state => state.getTotalMonthlySpending);
-  const getTotalYearlySpending = useUnifiedStore(state => state.getTotalYearlySpending);
-  const getSpendingByCategory = useUnifiedStore(state => state.getSpendingByCategory);
-  const getUpcomingPayments = useUnifiedStore(state => state.getUpcomingPayments);
+  // Optimized unified store selectors with shallow comparison
+  const {
+    subscriptions,
+    getTotalMonthlySpending,
+    getTotalYearlySpending,
+    getSpendingByCategory,
+    getUpcomingPayments
+  } = useUnifiedStore(
+    (state) => ({
+      subscriptions: state.data.subscriptions,
+      getTotalMonthlySpending: state.getTotalMonthlySpending,
+      getTotalYearlySpending: state.getTotalYearlySpending,
+      getSpendingByCategory: state.getSpendingByCategory,
+      getUpcomingPayments: state.getUpcomingPayments,
+    }),
+    shallow
+  );
 
   const totalMonthly = getTotalMonthlySpending();
   const totalYearly = getTotalYearlySpending();

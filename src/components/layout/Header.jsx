@@ -10,14 +10,24 @@ import {
   User,
   LogOut
 } from 'lucide-react';
+import { shallow } from 'zustand/shallow';
 import { Button } from '@/components/ui';
 import { useUnifiedAuth } from '../auth/UnifiedAuthProvider.jsx';
 import useUnifiedStore from '@/store/unified-store.js';
 
-const Header = ({ isSidebarOpen, setSidebarOpen }) => {
+const Header = () => {
   const location = useLocation();
   const { signOut, loading, getDisplayName } = useUnifiedAuth();
-  const auth = useUnifiedStore(state => state.auth);
+  
+  // Get auth and sidebar state from unified store
+  const { auth, sidebarOpen, toggleSidebar } = useUnifiedStore(
+    (state) => ({
+      auth: state.auth,
+      sidebarOpen: state.ui.sidebarOpen,
+      toggleSidebar: state.toggleSidebar,
+    }),
+    shallow
+  );
   
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);
@@ -70,10 +80,10 @@ const Header = ({ isSidebarOpen, setSidebarOpen }) => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setSidebarOpen(!isSidebarOpen)}
+            onClick={toggleSidebar}
             className="lg:hidden"
           >
-            {isSidebarOpen ? (
+            {sidebarOpen ? (
               <X className="h-5 w-5" />
             ) : (
               <Menu className="h-5 w-5" />

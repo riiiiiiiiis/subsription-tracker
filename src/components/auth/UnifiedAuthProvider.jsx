@@ -119,14 +119,14 @@ export const UnifiedAuthProvider = ({ children }) => {
     }
   };
 
-  // Context value using unified store state
+  // Context value using unified store state with fallbacks
   const value = {
-    user: auth.user,
-    profile: auth.profile,
-    session: auth.session,
-    loading: auth.isLoading,
-    error: auth.error,
-    isAuthenticated: auth.isAuthenticated,
+    user: auth?.user || null,
+    profile: auth?.profile || null,
+    session: auth?.session || null,
+    loading: auth?.isLoading ?? true, // Default to true if undefined
+    error: auth?.error || null,
+    isAuthenticated: auth?.isAuthenticated ?? false, // Default to false if undefined
     signIn,
     signUp,
     signOut,
