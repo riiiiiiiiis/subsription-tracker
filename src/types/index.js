@@ -32,21 +32,21 @@ export const getCategoryColor = (category) => {
 
 export const getCategoryLabel = (category) => {
   const labels = {
-    entertainment: 'Entertainment',
-    utilities: 'Utilities',
-    software: 'Software',
-    food: 'Food & Delivery',
-    health: 'Health & Fitness',
-    other: 'Other',
+    entertainment: 'Развлечения',
+    utilities: 'Коммунальные услуги',
+    software: 'Программное обеспечение',
+    food: 'Еда и доставка',
+    health: 'Здоровье и фитнес',
+    other: 'Другое',
   };
-  return labels[category] || 'Other';
+  return labels[category] || 'Другое';
 };
 
 export const getBillingCycleLabel = (cycle) => {
   const labels = {
-    weekly: 'Weekly',
-    monthly: 'Monthly',
-    yearly: 'Yearly',
+    weekly: 'Еженедельно',
+    monthly: 'Ежемесячно',
+    yearly: 'Ежегодно',
   };
   return labels[cycle];
 };
@@ -83,7 +83,7 @@ export const calculateNextPaymentDate = (lastPayment, cycle) => {
 };
 
 export const formatCurrency = (amount, currency = 'USD') => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('ru-RU', {
     style: 'currency',
     currency,
   }).format(amount);
@@ -98,23 +98,23 @@ export const validateSubscription = (subscription) => {
   const errors = {};
   
   if (!subscription.name || subscription.name.trim() === '') {
-    errors.name = 'Name is required';
+    errors.name = 'Требуется название';
   }
-  
+
   if (!subscription.amount || subscription.amount <= 0) {
-    errors.amount = 'Amount must be greater than 0';
+    errors.amount = 'Сумма должна быть больше 0';
   }
-  
+
   if (!subscription.billingCycle || !Object.values(BILLING_CYCLES).includes(subscription.billingCycle)) {
-    errors.billingCycle = 'Valid billing cycle is required';
+    errors.billingCycle = 'Требуется корректный цикл оплаты';
   }
-  
+
   if (!subscription.category || !Object.values(CATEGORIES).includes(subscription.category)) {
-    errors.category = 'Valid category is required';
+    errors.category = 'Требуется корректная категория';
   }
-  
+
   if (!subscription.nextPaymentDate) {
-    errors.nextPaymentDate = 'Next payment date is required';
+    errors.nextPaymentDate = 'Требуется дата следующего платежа';
   }
   
   return {
@@ -128,7 +128,7 @@ export const getSampleSubscriptions = () => [
   {
     id: generateId(),
     name: 'Netflix',
-    description: 'Streaming service',
+    description: 'Стриминговый сервис',
     amount: 15.99,
     currency: 'USD',
     billingCycle: 'monthly',
@@ -142,7 +142,7 @@ export const getSampleSubscriptions = () => [
   {
     id: generateId(),
     name: 'Spotify Premium',
-    description: 'Music streaming',
+    description: 'Музыкальный стриминг',
     amount: 9.99,
     currency: 'USD',
     billingCycle: 'monthly',
@@ -156,7 +156,7 @@ export const getSampleSubscriptions = () => [
   {
     id: generateId(),
     name: 'Adobe Creative Suite',
-    description: 'Design software',
+    description: 'Пакет для дизайна',
     amount: 52.99,
     currency: 'USD',
     billingCycle: 'monthly',
@@ -169,8 +169,8 @@ export const getSampleSubscriptions = () => [
   },
   {
     id: generateId(),
-    name: 'Gym Membership',
-    description: 'Local fitness center',
+    name: 'Абонемент в спортзал',
+    description: 'Местный фитнес-центр',
     amount: 35.00,
     currency: 'USD',
     billingCycle: 'monthly',

@@ -7,7 +7,7 @@ const Select = ({
   value,
   onChange,
   options = [],
-  placeholder = 'Select an option',
+  placeholder = 'Выберите вариант',
   disabled = false,
   required = false,
   className = '',
