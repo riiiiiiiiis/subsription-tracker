@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { devtools, persist, createJSONStorage } from 'zustand/middleware';
 import { 
   calculateMonthlyAmount, 
   calculateNextPaymentDate
@@ -10,7 +10,8 @@ import { supabase } from '../lib/supabase.js';
 
 const useSubscriptionStore = create(
   devtools(
-    (set, get) => ({
+    persist(
+      (set, get) => ({
       // State
       subscriptions: [],
       filteredSubscriptions: [],
@@ -29,6 +30,7 @@ const useSubscriptionStore = create(
       
       // Auth state
       user: null,
+      profile: null,
       isAuthenticated: false,
       authLoading: true,
 
@@ -49,15 +51,36 @@ const useSubscriptionStore = create(
           
           if (session?.user) {
             console.log('✅ Store: User authenticated, setting user and loading data...');
+            
+            // Check if we have persisted data
+            const currentState = get();
+            const hasPersistedData = currentState.subscriptions && currentState.subscriptions.length > 0;
+            
             set({ 
               user: session.user, 
               isAuthenticated: true,
               authLoading: false 
             });
             
-            // Load user subscriptions
-            console.log('📦 Store: About to load subscriptions...');
-            await get().loadSubscriptions();
+            // Load profile data
+            await get().loadUserProfile(session.user.id);
+            
+            if (hasPersistedData) {
+              console.log('📦 Store: Using persisted subscriptions data');
+              // Refresh filtered subscriptions with persisted data
+              set({
+                filteredSubscriptions: get().applyFilters(currentState.subscriptions),
+                isLoading: false
+              });
+              
+              // Load fresh data in background
+              console.log('🔄 Store: Loading fresh data in background...');
+              await get().loadSubscriptions();
+            } else {
+              console.log('📦 Store: No persisted data, loading from server...');
+              // Load user subscriptions from server
+              await get().loadSubscriptions();
+            }
             
             // Set up real-time subscription
             console.log('📶 Store: Setting up real-time subscription...');
@@ -92,7 +115,8 @@ const useSubscriptionStore = create(
         });
         
         if (user) {
-          console.log('📦 Store: User set, loading subscriptions...');
+          console.log('📦 Store: User set, loading profile and subscriptions...');
+          get().loadUserProfile(user.id);
           get().loadSubscriptions();
           console.log('📶 Store: Setting up real-time subscription...');
           get().setupRealtimeSubscription();
@@ -114,13 +138,35 @@ const useSubscriptionStore = create(
           filteredSubscriptions: [],
           selectedSubscription: null,
           user: null,
+          profile: null,
           isAuthenticated: false,
           realtimeSubscription: null,
           error: null
         });
       },
 
-      // Load subscriptions from Supabase
+      // Load user profile
+      loadUserProfile: async (userId) => {
+        try {
+          console.log('📋 Store: Loading user profile for:', userId);
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', userId)
+            .single();
+          
+          if (error) {
+            console.error('❌ Store: Error loading profile:', error);
+            set({ profile: null });
+          } else {
+            console.log('✅ Store: Profile loaded:', data);
+            set({ profile: data });
+          }
+        } catch (error) {
+          console.error('💥 Store: Unexpected error loading profile:', error);
+          set({ profile: null });
+        }
+      },
       loadSubscriptions: async () => {
         console.log('🔄 Store: Starting loadSubscriptions...');
         set({ isLoading: true, error: null });
@@ -341,6 +387,11 @@ const useSubscriptionStore = create(
         });
       },
 
+      // Check if store has been hydrated (for persistence)
+      hasHydrated: () => {
+        return get().user !== null || get().subscriptions.length > 0;
+      },
+
       // Analytics getters
       getTotalMonthlySpending: () => {
         const { subscriptions } = get();
@@ -450,7 +501,27 @@ const useSubscriptionStore = create(
       setLoading: (loading) => {
         set({ isLoading: loading });
       },
-    }),
+      }),
+      {
+        name: 'subscription-tracker-storage',
+        storage: createJSONStorage(() => localStorage),
+        partialize: (state) => ({
+          // Only persist essential data
+          subscriptions: state.subscriptions,
+          activeFilters: state.activeFilters,
+          user: state.user,
+          profile: state.profile,
+          isAuthenticated: state.isAuthenticated
+        }),
+        onRehydrateStorage: () => (state) => {
+          console.log('Store rehydrated:', state);
+          // Refresh filtered subscriptions after rehydration
+          if (state && state.subscriptions) {
+            state.filteredSubscriptions = state.applyFilters ? state.applyFilters(state.subscriptions) : state.subscriptions;
+          }
+        }
+      }
+    ),
     { name: 'subscription-tracker-supabase' }
   )
 );

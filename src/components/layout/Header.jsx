@@ -12,10 +12,19 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui';
 import { useAuth } from '../auth/AuthProvider.jsx';
+import useSubscriptionStore from '@/store/index.js';
 
 const Header = ({ isSidebarOpen, setSidebarOpen }) => {
   const location = useLocation();
-  const { user, profile, signOut, loading } = useAuth();
+  const { signOut, loading } = useAuth();
+  // Get user and profile from store (primary) with AuthProvider as fallback
+  const { user: storeUser, profile: storeProfile } = useSubscriptionStore();
+  const { user: authUser, profile: authProfile } = useAuth();
+  
+  // Prioritize store data over auth provider data
+  const user = storeUser || authUser;
+  const profile = storeProfile || authProfile;
+  
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);
 

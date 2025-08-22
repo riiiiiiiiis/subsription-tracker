@@ -10,5 +10,23 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src')
     }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          supabase: ['@supabase/supabase-js'],
+          charts: ['recharts'],
+          utils: ['date-fns', 'zustand']
+        }
+      }
+    }
+  },
+  // SPA fallback for routing
+  preview: {
+    port: 4173,
+    strictPort: true,
+    cors: true
   }
 })
