@@ -10,20 +10,53 @@ import {
   User,
   LogOut
 } from 'lucide-react';
+import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 import { Button } from '@/components/ui';
 import { useUnifiedAuth } from '../auth/UnifiedAuthProvider.jsx';
 import useUnifiedStore from '@/store/unified-store.js';
 
-const Header = ({ isSidebarOpen, setSidebarOpen }) => {
+const Header = () => {
   const location = useLocation();
-  const { signOut, loading, getDisplayName } = useUnifiedAuth();
-  const auth = useUnifiedStore(state => state.auth);
+  const { signOut, loading } = useUnifiedAuth();
+  
+  // Get auth, sidebar state from unified store
+  const { auth, sidebarOpen, toggleSidebar } = useUnifiedStore(
+    useShallow((state) => ({
+      auth: state.auth,
+      sidebarOpen: state.ui.sidebarOpen,
+      toggleSidebar: state.toggleSidebar,
+    }))
+  );
+  
+  // Compute display name locally to avoid function call in selector
+  const getDisplayName = () => {
+    const { profile, user } = auth;
+    
+    // Priority order for display name
+    if (profile?.full_name?.trim()) {
+      return profile.full_name.trim();
+    }
+    
+    if (profile?.display_name?.trim()) {
+      return profile.display_name.trim();
+    }
+    
+    if (user?.user_metadata?.full_name?.trim()) {
+      return user.user_metadata.full_name.trim();
+    }
+    
+    if (user?.email) {
+      return user.email.split('@')[0];
+    }
+    
+    return 'User';
+  };
+  
+  const displayName = getDisplayName();
   
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef(null);
-
-  // Get display name from unified system
-  const displayName = getDisplayName();
 
   const handleSignOut = async () => {
     try {
@@ -70,10 +103,10 @@ const Header = ({ isSidebarOpen, setSidebarOpen }) => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setSidebarOpen(!isSidebarOpen)}
+            onClick={toggleSidebar}
             className="lg:hidden"
           >
-            {isSidebarOpen ? (
+            {sidebarOpen ? (
               <X className="h-5 w-5" />
             ) : (
               <Menu className="h-5 w-5" />

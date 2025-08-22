@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { 
   DollarSign, 
@@ -10,17 +10,29 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
+import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 import useUnifiedStore from '@/store/unified-store';
 import { Card, Button } from '@/components/ui';
 import { formatCurrency, getCategoryColor, getCategoryLabel } from '@/types';
 
 const Dashboard = () => {
-  // Use unified store
-  const subscriptions = useUnifiedStore(state => state.data.subscriptions);
-  const getTotalMonthlySpending = useUnifiedStore(state => state.getTotalMonthlySpending);
-  const getTotalYearlySpending = useUnifiedStore(state => state.getTotalYearlySpending);
-  const getUpcomingPayments = useUnifiedStore(state => state.getUpcomingPayments);
-  const getThisMonthPayments = useUnifiedStore(state => state.getThisMonthPayments);
+  // Optimized unified store selectors with shallow comparison
+  const {
+    subscriptions,
+    getTotalMonthlySpending,
+    getTotalYearlySpending,
+    getUpcomingPayments,
+    getThisMonthPayments
+  } = useUnifiedStore(
+    useShallow((state) => ({
+      subscriptions: state.data.subscriptions,
+      getTotalMonthlySpending: state.getTotalMonthlySpending,
+      getTotalYearlySpending: state.getTotalYearlySpending,
+      getUpcomingPayments: state.getUpcomingPayments,
+      getThisMonthPayments: state.getThisMonthPayments,
+    }))
+  );
 
   const totalMonthly = getTotalMonthlySpending();
   const totalYearly = getTotalYearlySpending();

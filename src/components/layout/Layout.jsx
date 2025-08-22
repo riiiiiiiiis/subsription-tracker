@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
+import useUnifiedStore from '@/store/unified-store';
 import Header from './Header.jsx';
 import Sidebar from './Sidebar.jsx';
 
 const Layout = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { sidebarOpen, setSidebarOpen } = useUnifiedStore(
+    useShallow((state) => ({
+      sidebarOpen: state.ui.sidebarOpen,
+      setSidebarOpen: state.setSidebarOpen,
+    }))
+  );
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header 
-        isSidebarOpen={sidebarOpen} 
-        setSidebarOpen={setSidebarOpen} 
-      />
+      <Header />
       <Sidebar 
         isOpen={sidebarOpen} 
         onClose={() => setSidebarOpen(false)} 

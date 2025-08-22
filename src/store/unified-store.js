@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { devtools, persist, createJSONStorage } from 'zustand/middleware';
 import { 
-  calculateMonthlyAmount, 
-  calculateNextPaymentDate
+  calculateMonthlyAmount
 } from '../types/index.js';
 import { addDays, isWithinInterval, startOfMonth, endOfMonth } from 'date-fns';
 import subscriptionService from '../services/subscriptionService.js';
+import { subscriptionFromDatabase } from '../utils/fieldMapping.js';
 import { supabase } from '../lib/supabase.js';
 
 const useUnifiedStore = create(
@@ -52,6 +52,12 @@ const useUnifiedStore = create(
         // UI state
         ui: {
           selectedSubscription: null,
+          sidebarOpen: false,
+        },
+        
+        // Notifications state
+        notifications: {
+          toasts: [], // Array of toast notifications
         },
 
         // ===============================
@@ -66,45 +72,13 @@ const useUnifiedStore = create(
           }));
           
           try {
-            // Check authentication with session restoration
-            console.log('🔐 UnifiedStore: Checking authentication...');
-            const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+            // Set initial loading state - let onAuthStateChange handle authentication
+            console.log('🔐 UnifiedStore: Waiting for authentication state from onAuthStateChange...');
             
-            if (sessionError) {
-              throw new Error(`Session error: ${sessionError.message}`);
-            }
+            // Don't make blocking getSession() call - rely on onAuthStateChange for auth state
+            // The auth state will be set by handleAuthStateChange when onAuthStateChange fires
+            // The INITIAL_SESSION event will properly set isLoading to false
             
-            console.log('🔑 UnifiedStore: Session check result:', { 
-              hasSession: !!session, 
-              hasUser: !!session?.user, 
-              userEmail: session?.user?.email 
-            });
-            
-            if (session?.user) {
-              console.log('✅ UnifiedStore: User authenticated, initializing user state...');
-              
-              // Set authenticated user state
-              set(state => ({
-                auth: {
-                  ...state.auth,
-                  user: session.user,
-                  session,
-                  isAuthenticated: true,
-                  isLoading: false,
-                  error: null
-                }
-              }));
-              
-              // Load user data in sequence with error handling
-              await get().loadUserProfile(session.user.id);
-              await get().loadUserSubscriptions();
-              
-              // Setup real-time connections with user-specific channels
-              get().setupRealtimeConnections();
-            } else {
-              console.log('❌ UnifiedStore: No authenticated user found');
-              get().resetToUnauthenticated();
-            }
           } catch (error) {
             console.error('💥 UnifiedStore: Error initializing store:', error);
             set(state => ({
@@ -126,18 +100,43 @@ const useUnifiedStore = create(
           console.log('🔄 UnifiedStore: Auth state change:', event, session?.user?.email);
           
           switch (event) {
+            case 'INITIAL_SESSION':
+              // Handle the initial session state when the app loads
+              if (session?.user) {
+                console.log('✅ UnifiedStore: Initial session found, setting authenticated user');
+                get().setAuthenticatedUser(session.user, session);
+              } else {
+                console.log('❌ UnifiedStore: No initial session found, resetting to unauthenticated');
+                // Ensure loading is set to false when no session is found
+                set(state => ({
+                  auth: {
+                    ...state.auth,
+                    user: null,
+                    profile: null,
+                    session: null,
+                    isAuthenticated: false,
+                    isLoading: false, // Explicitly set loading to false
+                    error: null
+                  }
+                }));
+              }
+              break;
+              
             case 'SIGNED_IN':
               if (session?.user) {
+                console.log('✅ UnifiedStore: User signed in');
                 get().setAuthenticatedUser(session.user, session);
               }
               break;
               
             case 'SIGNED_OUT':
+              console.log('🔓 UnifiedStore: User signed out');
               get().handleSignOut();
               break;
               
             case 'TOKEN_REFRESHED':
               if (session?.user) {
+                console.log('🔄 UnifiedStore: Token refreshed');
                 set(state => ({
                   auth: {
                     ...state.auth,
@@ -151,6 +150,7 @@ const useUnifiedStore = create(
               
             case 'USER_UPDATED':
               if (session?.user) {
+                console.log('👤 UnifiedStore: User updated');
                 set(state => ({
                   auth: {
                     ...state.auth,
@@ -162,10 +162,14 @@ const useUnifiedStore = create(
                 get().loadUserProfile(session.user.id);
               }
               break;
+              
+            default:
+              console.log('🔍 UnifiedStore: Unhandled auth state change:', event);
+              break;
           }
         },
 
-        // Set authenticated user state
+        // Set authenticated user state with timeout protection
         setAuthenticatedUser: async (user, session) => {
           console.log('👤 UnifiedStore: setAuthenticatedUser called with:', user.email);
           
@@ -180,12 +184,38 @@ const useUnifiedStore = create(
             }
           }));
           
-          // Load user data
-          await get().loadUserProfile(user.id);
-          await get().loadUserSubscriptions();
-          
-          // Setup real-time connections
-          get().setupRealtimeConnections();
+          try {
+            // Load user data with timeout protection
+            const loadUserDataWithTimeout = async () => {
+              const timeoutPromise = new Promise((_, reject) => {
+                setTimeout(() => {
+                  reject(new Error('User data loading timed out'));
+                }, 10000); // 10 second timeout
+              });
+              
+              const loadDataPromise = Promise.all([
+                get().loadUserProfile(user.id),
+                get().loadUserSubscriptions()
+              ]);
+              
+              return Promise.race([loadDataPromise, timeoutPromise]);
+            };
+            
+            await loadUserDataWithTimeout();
+            
+            // Setup real-time connections
+            get().setupRealtimeConnections();
+          } catch (error) {
+            console.error('💥 UnifiedStore: Error loading user data:', error);
+            // Don't reset auth state, just log the error
+            // User is still authenticated even if data loading fails
+            set(state => ({
+              auth: {
+                ...state.auth,
+                error: error.message
+              }
+            }));
+          }
         },
 
         // Reset to unauthenticated state
@@ -218,7 +248,11 @@ const useUnifiedStore = create(
               maxReconnectAttempts: 5
             },
             ui: {
-              selectedSubscription: null
+              selectedSubscription: null,
+              sidebarOpen: false
+            },
+            notifications: {
+              toasts: []
             }
           });
         },
@@ -255,13 +289,63 @@ const useUnifiedStore = create(
             
             if (error) {
               console.error('❌ UnifiedStore: Error loading profile:', error);
-              set(state => ({
-                auth: { 
-                  ...state.auth, 
-                  profile: null,
-                  error: `Profile load error: ${error.message}`
+              
+              // If profile doesn't exist (PGRST116), create one
+              if (error.code === 'PGRST116') {
+                console.log('📝 UnifiedStore: Profile not found, creating default profile...');
+                try {
+                  const { auth: { user } } = get();
+                  const fallbackProfile = {
+                    id: userId,
+                    email: user?.email || '',
+                    full_name: user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User',
+                    preferences: {}
+                  };
+                  
+                  const { data: newProfile, error: createError } = await supabase
+                    .from('profiles')
+                    .insert(fallbackProfile)
+                    .select()
+                    .single();
+                  
+                  if (createError) {
+                    console.error('❌ UnifiedStore: Error creating fallback profile:', createError);
+                    set(state => ({
+                      auth: { 
+                        ...state.auth, 
+                        profile: null,
+                        error: `Profile creation error: ${createError.message}`
+                      }
+                    }));
+                  } else {
+                    console.log('✅ UnifiedStore: Fallback profile created:', newProfile);
+                    set(state => ({
+                      auth: { 
+                        ...state.auth, 
+                        profile: newProfile,
+                        error: null
+                      }
+                    }));
+                  }
+                } catch (createError) {
+                  console.error('💥 UnifiedStore: Unexpected error creating profile:', createError);
+                  set(state => ({
+                    auth: { 
+                      ...state.auth, 
+                      profile: null,
+                      error: `Profile creation error: ${createError.message}`
+                    }
+                  }));
                 }
-              }));
+              } else {
+                set(state => ({
+                  auth: { 
+                    ...state.auth, 
+                    profile: null,
+                    error: `Profile load error: ${error.message}`
+                  }
+                }));
+              }
             } else {
               console.log('✅ UnifiedStore: Profile loaded:', data);
               set(state => ({
@@ -453,12 +537,57 @@ const useUnifiedStore = create(
           }
         },
 
-        // Handle real-time subscription changes
+        // Handle real-time subscription changes with granular updates
         handleSubscriptionRealtimeChange: (payload) => {
           console.log('🔄 UnifiedStore: Processing subscription real-time change:', payload.eventType);
           
-          // Always reload subscriptions to ensure consistency
-          get().loadUserSubscriptions();
+          const currentState = get();
+          let updatedSubscriptions = [...currentState.data.subscriptions];
+          
+          switch (payload.eventType) {
+            case 'INSERT':
+              // Add new subscription to the list
+              if (payload.new) {
+                const newSubscription = subscriptionFromDatabase ? subscriptionFromDatabase(payload.new) : payload.new;
+                updatedSubscriptions.push(newSubscription);
+                console.log('✅ UnifiedStore: Added new subscription:', newSubscription.name);
+              }
+              break;
+              
+            case 'UPDATE':
+              // Update existing subscription
+              if (payload.new) {
+                const updatedSubscription = subscriptionFromDatabase ? subscriptionFromDatabase(payload.new) : payload.new;
+                updatedSubscriptions = updatedSubscriptions.map(sub => 
+                  sub.id === updatedSubscription.id ? updatedSubscription : sub
+                );
+                console.log('✅ UnifiedStore: Updated subscription:', updatedSubscription.name);
+              }
+              break;
+              
+            case 'DELETE':
+              // Remove subscription from the list
+              if (payload.old) {
+                updatedSubscriptions = updatedSubscriptions.filter(sub => sub.id !== payload.old.id);
+                console.log('✅ UnifiedStore: Removed subscription:', payload.old.name);
+              }
+              break;
+              
+            default:
+              console.log('🔄 UnifiedStore: Unknown event type, falling back to full reload');
+              get().loadUserSubscriptions();
+              return;
+          }
+          
+          // Update state with new subscriptions list
+          set(state => ({
+            data: {
+              ...state.data,
+              subscriptions: updatedSubscriptions,
+              filteredSubscriptions: get().applyFilters(updatedSubscriptions),
+              lastSync: Date.now()
+            }
+          }));
         },
 
         // Handle real-time profile changes
@@ -517,25 +646,30 @@ const useUnifiedStore = create(
             const { data, error } = await subscriptionService.createSubscription(subscriptionData);
             
             if (error) {
+              const errorMessage = `Failed to add subscription: ${error.message}`;
               set(state => ({
-                data: { ...state.data, error: error.message, isLoading: false }
+                data: { ...state.data, error: errorMessage, isLoading: false }
               }));
+              get().showError(errorMessage);
               return { success: false, error };
             }
             
             // Reload subscriptions to get the latest data
             await get().loadUserSubscriptions();
             
+            get().showSuccess(`Successfully added "${subscriptionData.name}" subscription`);
             return { success: true, data };
           } catch (error) {
             console.error('Error adding subscription:', error);
+            const errorMessage = `Failed to add subscription: ${error.message}`;
             set(state => ({
               data: { 
                 ...state.data,
-                error: error.message,
+                error: errorMessage,
                 isLoading: false
               }
             }));
+            get().showError(errorMessage);
             return { success: false, error };
           }
         },
@@ -549,9 +683,11 @@ const useUnifiedStore = create(
             const { data, error } = await subscriptionService.updateSubscription(id, updates);
             
             if (error) {
+              const errorMessage = `Failed to update subscription: ${error.message}`;
               set(state => ({
-                data: { ...state.data, error: error.message, isLoading: false }
+                data: { ...state.data, error: errorMessage, isLoading: false }
               }));
+              get().showError(errorMessage);
               return { success: false, error };
             }
             
@@ -570,16 +706,20 @@ const useUnifiedStore = create(
               }
             }));
             
+            const subscriptionName = data?.name || updates?.name || 'Subscription';
+            get().showSuccess(`Successfully updated "${subscriptionName}"`);
             return { success: true, data };
           } catch (error) {
             console.error('Error updating subscription:', error);
+            const errorMessage = `Failed to update subscription: ${error.message}`;
             set(state => ({
               data: {
                 ...state.data,
-                error: error.message,
+                error: errorMessage,
                 isLoading: false
               }
             }));
+            get().showError(errorMessage);
             return { success: false, error };
           }
         },
@@ -590,17 +730,23 @@ const useUnifiedStore = create(
           }));
           
           try {
+            // Get subscription name before deletion for toast message
+            const currentState = get();
+            const subscriptionToDelete = currentState.data.subscriptions.find(sub => sub.id === id);
+            const subscriptionName = subscriptionToDelete?.name || 'Subscription';
+            
             const { success, error } = await subscriptionService.deleteSubscription(id);
             
             if (!success) {
+              const errorMessage = `Failed to delete subscription: ${error.message}`;
               set(state => ({
-                data: { ...state.data, error: error.message, isLoading: false }
+                data: { ...state.data, error: errorMessage, isLoading: false }
               }));
+              get().showError(errorMessage);
               return { success: false, error };
             }
             
             // Update local state
-            const currentState = get();
             const updatedSubscriptions = currentState.data.subscriptions.filter(sub => sub.id !== id);
             
             set(state => ({
@@ -616,16 +762,19 @@ const useUnifiedStore = create(
               }
             }));
             
+            get().showSuccess(`Successfully deleted "${subscriptionName}"`);
             return { success: true };
           } catch (error) {
             console.error('Error deleting subscription:', error);
+            const errorMessage = `Failed to delete subscription: ${error.message}`;
             set(state => ({
               data: {
                 ...state.data,
-                error: error.message,
+                error: errorMessage,
                 isLoading: false
               }
             }));
+            get().showError(errorMessage);
             return { success: false, error };
           }
         },
@@ -729,6 +878,99 @@ const useUnifiedStore = create(
           set(state => ({
             ui: { ...state.ui, selectedSubscription: subscription }
           }));
+        },
+
+        setSidebarOpen: (isOpen) => {
+          set(state => ({
+            ui: { ...state.ui, sidebarOpen: isOpen }
+          }));
+        },
+
+        toggleSidebar: () => {
+          set(state => ({
+            ui: { ...state.ui, sidebarOpen: !state.ui.sidebarOpen }
+          }));
+        },
+
+        // ===============================
+        // NOTIFICATION METHODS
+        // ===============================
+
+        addToast: (toast) => {
+          const id = Date.now() + Math.random();
+          const newToast = {
+            id,
+            type: 'info', // default type
+            duration: 5000, // default duration
+            ...toast,
+          };
+          
+          set(state => ({
+            notifications: {
+              ...state.notifications,
+              toasts: [...state.notifications.toasts, newToast]
+            }
+          }));
+          
+          // Auto-remove toast after duration
+          if (newToast.duration > 0) {
+            setTimeout(() => {
+              get().removeToast(id);
+            }, newToast.duration);
+          }
+        },
+
+        removeToast: (id) => {
+          set(state => ({
+            notifications: {
+              ...state.notifications,
+              toasts: state.notifications.toasts.filter(toast => toast.id !== id)
+            }
+          }));
+        },
+
+        clearAllToasts: () => {
+          set(state => ({
+            notifications: {
+              ...state.notifications,
+              toasts: []
+            }
+          }));
+        },
+
+        // Helper methods for different toast types
+        showSuccess: (message, options = {}) => {
+          get().addToast({
+            type: 'success',
+            message,
+            ...options
+          });
+        },
+
+        showError: (message, options = {}) => {
+          get().addToast({
+            type: 'error',
+            message,
+            duration: 8000, // Longer duration for errors
+            ...options
+          });
+        },
+
+        showInfo: (message, options = {}) => {
+          get().addToast({
+            type: 'info',
+            message,
+            ...options
+          });
+        },
+
+        showWarning: (message, options = {}) => {
+          get().addToast({
+            type: 'warning',
+            message,
+            duration: 6000,
+            ...options
+          });
         },
 
         clearError: () => {

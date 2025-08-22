@@ -62,12 +62,23 @@ class AuthService {
   }
 
   /**
-   * Sign out the current user
+   * Sign out the current user with timeout protection
+   * @param {number} timeoutMs - Timeout in milliseconds (default: 5000)
    * @returns {Promise<{success: boolean, error: Error|null}>}
    */
-  async signOut() {
+  async signOut(timeoutMs = 5000) {
     try {
-      const { error } = await supabase.auth.signOut();
+      // Create timeout protection to prevent indefinite hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => {
+          reject(new Error('Sign out operation timed out'));
+        }, timeoutMs);
+      });
+
+      // Race the signOut call against the timeout
+      const signOutPromise = supabase.auth.signOut();
+      
+      const { error } = await Promise.race([signOutPromise, timeoutPromise]);
 
       if (error) {
         console.error('Error signing out:', error);
@@ -76,7 +87,8 @@ class AuthService {
 
       return { success: true, error: null };
     } catch (error) {
-      console.error('Unexpected error signing out:', error);
+      console.error('Sign out operation failed or timed out:', error);
+      // Even if signOut fails, we should still clear local state
       return { success: false, error };
     }
   }

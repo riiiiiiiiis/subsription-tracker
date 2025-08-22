@@ -8,6 +8,8 @@ import {
   SortAsc,
   SortDesc 
 } from 'lucide-react';
+import { shallow } from 'zustand/shallow';
+import { useShallow } from 'zustand/react/shallow';
 import useUnifiedStore from '@/store/unified-store';
 import { Button, Input, Select, Card } from '@/components/ui';
 import SubscriptionCard from '../components/SubscriptionCard.jsx';
@@ -15,14 +17,26 @@ import AddSubscriptionModal from '../components/AddSubscriptionModal.jsx';
 import { getCategoryLabel } from '@/types';
 
 const Subscriptions = () => {
-  // Use unified store
-  const subscriptions = useUnifiedStore(state => state.data.subscriptions);
-  const filteredSubscriptions = useUnifiedStore(state => state.data.filteredSubscriptions);
-  const filters = useUnifiedStore(state => state.filters);
-  const setFilters = useUnifiedStore(state => state.setFilters);
-  const deleteSubscription = useUnifiedStore(state => state.deleteSubscription);
-  const toggleSubscriptionStatus = useUnifiedStore(state => state.toggleSubscriptionStatus);
-  const applyFilters = useUnifiedStore(state => state.applyFilters);
+  // Optimized unified store selectors with shallow comparison
+  const {
+    subscriptions,
+    filteredSubscriptions,
+    filters,
+    setFilters,
+    deleteSubscription,
+    toggleSubscriptionStatus,
+    applyFilters
+  } = useUnifiedStore(
+    useShallow((state) => ({
+      subscriptions: state.data.subscriptions,
+      filteredSubscriptions: state.data.filteredSubscriptions,
+      filters: state.filters,
+      setFilters: state.setFilters,
+      deleteSubscription: state.deleteSubscription,
+      toggleSubscriptionStatus: state.toggleSubscriptionStatus,
+      applyFilters: state.applyFilters,
+    }))
+  );
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState(null);
