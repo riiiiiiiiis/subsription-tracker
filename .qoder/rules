@@ -1,0 +1,20 @@
+# Project Rules
+
+## Standardized MCP Tool Usage Workflow
+
+Always use the following standardized workflow when working on tasks:
+
+1. **Sequential Thinking MCP** - Use for task planning, problem analysis, and systematic breakdown of complex issues
+2. **Playwright MCP** - Use for end-to-end testing, UI validation, and browser automation testing
+3. **Context7 MCP** - Use for retrieving official documentation instead of trial-and-error approaches
+
+### When to Apply This Workflow:
+- **Task Planning**: Start complex tasks with Sequential Thinking MCP to analyze and plan systematically
+- **Testing & Validation**: Use Playwright MCP to verify UI functionality and test user interactions
+- **Documentation Research**: When encountering errors or implementing features, use Context7 MCP to get accurate, up-to-date official documentation for libraries, frameworks, or tools
+
+### Benefits:
+- Ensures accurate, reliable, and standards-compliant solutions
+- Reduces trial-and-error approaches
+- Provides systematic problem-solving methodology
+- Validates implementations with real browser testing
