@@ -18,22 +18,34 @@ class SubscriptionService {
    * @returns {Promise<{data: Array, error: Error|null}>}
    */
   async getSubscriptions(options = {}) {
+    console.log('📡 SubscriptionService: getSubscriptions called with options:', options);
     const { orderBy = 'created_at', ascending = false } = options;
     
     try {
+      console.log('🚀 SubscriptionService: Making Supabase query...');
       const { data, error } = await supabase
         .from('subscriptions')
         .select('*')
         .order(orderBy, { ascending });
 
+      console.log('📊 SubscriptionService: Query result:', { 
+        dataLength: data ? data.length : 0, 
+        hasError: !!error,
+        errorMessage: error ? error.message : null,
+        errorCode: error ? error.code : null
+      });
+
       if (error) {
-        console.error('Error fetching subscriptions:', error);
+        console.error('❌ SubscriptionService: Error fetching subscriptions:', error);
         return { data: null, error };
       }
 
-      return { data: subscriptionsFromDatabase(data || []), error: null };
+      console.log('✅ SubscriptionService: Processing field mapping for', data?.length || 0, 'subscriptions');
+      const mappedData = subscriptionsFromDatabase(data || []);
+      console.log('🔄 SubscriptionService: Field mapping complete, returning', mappedData.length, 'subscriptions');
+      return { data: mappedData, error: null };
     } catch (error) {
-      console.error('Unexpected error fetching subscriptions:', error);
+      console.error('💥 SubscriptionService: Unexpected error fetching subscriptions:', error);
       return { data: null, error };
     }
   }

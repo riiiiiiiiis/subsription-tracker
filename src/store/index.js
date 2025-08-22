@@ -34,13 +34,21 @@ const useSubscriptionStore = create(
 
       // Initialize the store
       initialize: async () => {
+        console.log('🚀 Store: Initialize called');
         set({ isLoading: true, authLoading: true });
         
         try {
           // Check authentication
+          console.log('🔐 Store: Checking authentication...');
           const { data: { session } } = await supabase.auth.getSession();
+          console.log('🔑 Store: Session check result:', { 
+            hasSession: !!session, 
+            hasUser: !!session?.user, 
+            userEmail: session?.user?.email 
+          });
           
           if (session?.user) {
+            console.log('✅ Store: User authenticated, setting user and loading data...');
             set({ 
               user: session.user, 
               isAuthenticated: true,
@@ -48,11 +56,14 @@ const useSubscriptionStore = create(
             });
             
             // Load user subscriptions
+            console.log('📦 Store: About to load subscriptions...');
             await get().loadSubscriptions();
             
             // Set up real-time subscription
+            console.log('📶 Store: Setting up real-time subscription...');
             get().setupRealtimeSubscription();
           } else {
+            console.log('❌ Store: No authenticated user found');
             set({ 
               user: null, 
               isAuthenticated: false,
@@ -62,7 +73,7 @@ const useSubscriptionStore = create(
             });
           }
         } catch (error) {
-          console.error('Error initializing store:', error);
+          console.error('💥 Store: Error initializing store:', error);
           set({ 
             error: error.message,
             authLoading: false,
@@ -73,6 +84,7 @@ const useSubscriptionStore = create(
 
       // Authentication methods
       setUser: (user) => {
+        console.log('👤 Store: setUser called with:', user ? user.email : 'null');
         set({ 
           user, 
           isAuthenticated: !!user,
@@ -80,9 +92,12 @@ const useSubscriptionStore = create(
         });
         
         if (user) {
+          console.log('📦 Store: User set, loading subscriptions...');
           get().loadSubscriptions();
+          console.log('📶 Store: Setting up real-time subscription...');
           get().setupRealtimeSubscription();
         } else {
+          console.log('🧹 Store: User cleared, cleaning up...');
           get().cleanup();
         }
       },
@@ -107,20 +122,30 @@ const useSubscriptionStore = create(
 
       // Load subscriptions from Supabase
       loadSubscriptions: async () => {
+        console.log('🔄 Store: Starting loadSubscriptions...');
         set({ isLoading: true, error: null });
         
         try {
+          console.log('📡 Store: Calling subscriptionService.getSubscriptions...');
           const { data, error } = await subscriptionService.getSubscriptions({
             orderBy: 'created_at',
             ascending: false
           });
           
+          console.log('📊 Store: getSubscriptions result:', { 
+            dataLength: data ? data.length : 0, 
+            hasError: !!error,
+            errorMessage: error ? error.message : null 
+          });
+          
           if (error) {
+            console.error('❌ Store: Error loading subscriptions:', error);
             set({ error: error.message, isLoading: false });
             return;
           }
           
           const subscriptions = data || [];
+          console.log('✅ Store: Setting subscriptions in state:', subscriptions.length);
           set({ 
             subscriptions,
             filteredSubscriptions: get().applyFilters(subscriptions),
@@ -128,7 +153,7 @@ const useSubscriptionStore = create(
             error: null
           });
         } catch (error) {
-          console.error('Error loading subscriptions:', error);
+          console.error('💥 Store: Unexpected error loading subscriptions:', error);
           set({ 
             error: error.message,
             isLoading: false
