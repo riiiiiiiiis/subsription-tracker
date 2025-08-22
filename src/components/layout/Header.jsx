@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -6,12 +6,41 @@ import {
   BarChart3, 
   Settings,
   Menu,
-  X 
+  X,
+  User,
+  LogOut
 } from 'lucide-react';
 import { Button } from '@/components/ui';
+import { useAuth } from '../auth/AuthProvider.jsx';
 
 const Header = ({ isSidebarOpen, setSidebarOpen }) => {
   const location = useLocation();
+  const { user, signOut, loading } = useAuth();
+  const [showUserMenu, setShowUserMenu] = useState(false);
+  const userMenuRef = useRef(null);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      setShowUserMenu(false);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setShowUserMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const navigation = [
     { name: 'Dashboard', href: '/', icon: LayoutDashboard },
@@ -82,6 +111,46 @@ const Header = ({ isSidebarOpen, setSidebarOpen }) => {
           <Button variant="outline" size="sm">
             Export Data
           </Button>
+          
+          {/* User dropdown */}
+          <div className="relative" ref={userMenuRef}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowUserMenu(!showUserMenu)}
+              className="flex items-center space-x-2"
+            >
+              <User className="h-4 w-4" />
+              <span className="hidden sm:block">
+                {user?.email?.split('@')[0] || 'User'}
+              </span>
+            </Button>
+
+            {/* Dropdown menu */}
+            {showUserMenu && (
+              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                <div className="py-2">
+                  <div className="px-4 py-2 border-b border-gray-100">
+                    <p className="text-sm font-medium text-gray-900">
+                      {user?.email?.split('@')[0] || 'User'}
+                    </p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {user?.email}
+                    </p>
+                  </div>
+                  
+                  <button
+                    onClick={handleSignOut}
+                    disabled={loading}
+                    className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    <span>{loading ? 'Signing out...' : 'Sign out'}</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>

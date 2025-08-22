@@ -1,260 +1,424 @@
 import { create } from 'zustand';
-import { devtools, persist } from 'zustand/middleware';
+import { devtools } from 'zustand/middleware';
 import { 
-  generateId, 
   calculateMonthlyAmount, 
-  calculateNextPaymentDate,
-  getSampleSubscriptions
+  calculateNextPaymentDate
 } from '../types/index.js';
 import { addDays, isWithinInterval, startOfMonth, endOfMonth } from 'date-fns';
+import subscriptionService from '../services/subscriptionService.js';
+import { supabase } from '../lib/supabase.js';
 
 const useSubscriptionStore = create(
   devtools(
-    persist(
-      (set, get) => ({
-        // State
-        subscriptions: [],
-        filteredSubscriptions: [],
-        activeFilters: {
-          category: 'all',
-          status: 'all',
-          sortBy: 'name',
-          sortOrder: 'asc',
-        },
-        isLoading: false,
-        selectedSubscription: null,
+    (set, get) => ({
+      // State
+      subscriptions: [],
+      filteredSubscriptions: [],
+      activeFilters: {
+        category: 'all',
+        status: 'all',
+        sortBy: 'name',
+        sortOrder: 'asc',
+      },
+      isLoading: false,
+      selectedSubscription: null,
+      error: null,
+      
+      // Real-time subscription
+      realtimeSubscription: null,
+      
+      // Auth state
+      user: null,
+      isAuthenticated: false,
+      authLoading: true,
 
-        // Helper method to get filtered subscriptions
-        getFilteredSubscriptions: () => {
-          const { subscriptions, activeFilters } = get();
-          return get().applyFilters(subscriptions, activeFilters);
-        },
-
-        // Method to refresh filtered subscriptions
-        refreshFilteredSubscriptions: () => {
-          const { subscriptions, activeFilters } = get();
-          const filtered = get().applyFilters(subscriptions, activeFilters);
-          set({ filteredSubscriptions: filtered });
-        },
-
-        // Actions
-        addSubscription: (subscriptionData) => {
-          const newSubscription = {
-            ...subscriptionData,
-            id: generateId(),
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          };
-
-          set((state) => {
-            const newSubscriptions = [...state.subscriptions, newSubscription];
-            return {
-              subscriptions: newSubscriptions,
-              filteredSubscriptions: get().applyFilters(newSubscriptions),
-            };
-          });
-        },
-
-        updateSubscription: (id, updates) => {
-          set((state) => {
-            const updatedSubscriptions = state.subscriptions.map((sub) =>
-              sub.id === id 
-                ? { ...sub, ...updates, updatedAt: new Date() }
-                : sub
-            );
-            return {
-              subscriptions: updatedSubscriptions,
-              filteredSubscriptions: get().applyFilters(updatedSubscriptions),
-            };
-          });
-        },
-
-        deleteSubscription: (id) => {
-          set((state) => {
-            const updatedSubscriptions = state.subscriptions.filter(sub => sub.id !== id);
-            return {
-              subscriptions: updatedSubscriptions,
-              filteredSubscriptions: get().applyFilters(updatedSubscriptions),
-            };
-          });
-        },
-
-        toggleSubscriptionStatus: (id) => {
-          const subscription = get().subscriptions.find(sub => sub.id === id);
-          if (subscription) {
-            get().updateSubscription(id, { isActive: !subscription.isActive });
-          }
-        },
-
-        setSelectedSubscription: (subscription) => {
-          set({ selectedSubscription: subscription });
-        },
-
-        setFilters: (filters) => {
-          set((state) => {
-            const newFilters = { ...state.activeFilters, ...filters };
-            return {
-              activeFilters: newFilters,
-              filteredSubscriptions: get().applyFilters(state.subscriptions, newFilters),
-            };
-          });
-        },
-
-        applyFilters: (subscriptions, filters = null) => {
-          const activeFilters = filters || get().activeFilters;
-          let filtered = [...subscriptions];
-
-          // Filter by category
-          if (activeFilters.category !== 'all') {
-            filtered = filtered.filter(sub => sub.category === activeFilters.category);
-          }
-
-          // Filter by status
-          if (activeFilters.status !== 'all') {
-            const isActive = activeFilters.status === 'active';
-            filtered = filtered.filter(sub => sub.isActive === isActive);
-          }
-
-          // Sort
-          filtered.sort((a, b) => {
-            const aValue = a[activeFilters.sortBy];
-            const bValue = b[activeFilters.sortBy];
-            
-            let comparison = 0;
-            if (aValue < bValue) comparison = -1;
-            if (aValue > bValue) comparison = 1;
-            
-            return activeFilters.sortOrder === 'desc' ? -comparison : comparison;
-          });
-
-          return filtered;
-        },
-
-        // Analytics getters
-        getTotalMonthlySpending: () => {
-          const { subscriptions } = get();
-          return subscriptions
-            .filter(sub => sub.isActive)
-            .reduce((total, sub) => {
-              return total + calculateMonthlyAmount(sub.amount, sub.billingCycle);
-            }, 0);
-        },
-
-        getTotalYearlySpending: () => {
-          return get().getTotalMonthlySpending() * 12;
-        },
-
-        getSpendingByCategory: () => {
-          const { subscriptions } = get();
-          const activeSubscriptions = subscriptions.filter(sub => sub.isActive);
-          const totalMonthly = get().getTotalMonthlySpending();
-
-          const categoryData = activeSubscriptions.reduce((acc, sub) => {
-            const monthlyAmount = calculateMonthlyAmount(sub.amount, sub.billingCycle);
-            
-            if (!acc[sub.category]) {
-              acc[sub.category] = {
-                category: sub.category,
-                amount: 0,
-                count: 0,
-                percentage: 0,
-              };
-            }
-            
-            acc[sub.category].amount += monthlyAmount;
-            acc[sub.category].count += 1;
-            
-            return acc;
-          }, {});
-
-          // Calculate percentages
-          Object.values(categoryData).forEach(category => {
-            category.percentage = totalMonthly > 0 ? (category.amount / totalMonthly) * 100 : 0;
-          });
-
-          return Object.values(categoryData);
-        },
-
-        getUpcomingPayments: (days = 30) => {
-          const { subscriptions } = get();
-          const now = new Date();
-          const endDate = addDays(now, days);
-
-          return subscriptions
-            .filter(sub => sub.isActive)
-            .filter(sub => {
-              const paymentDate = new Date(sub.nextPaymentDate);
-              return isWithinInterval(paymentDate, { start: now, end: endDate });
-            })
-            .map(sub => ({
-              id: sub.id,
-              subscriptionName: sub.name,
-              amount: sub.amount,
-              currency: sub.currency,
-              dueDate: new Date(sub.nextPaymentDate),
-              category: sub.category,
-            }))
-            .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
-        },
-
-        getThisMonthPayments: () => {
-          const { subscriptions } = get();
-          const now = new Date();
-          const monthStart = startOfMonth(now);
-          const monthEnd = endOfMonth(now);
-
-          return subscriptions
-            .filter(sub => sub.isActive)
-            .filter(sub => {
-              const paymentDate = new Date(sub.nextPaymentDate);
-              return isWithinInterval(paymentDate, { start: monthStart, end: monthEnd });
+      // Initialize the store
+      initialize: async () => {
+        set({ isLoading: true, authLoading: true });
+        
+        try {
+          // Check authentication
+          const { data: { session } } = await supabase.auth.getSession();
+          
+          if (session?.user) {
+            set({ 
+              user: session.user, 
+              isAuthenticated: true,
+              authLoading: false 
             });
-        },
-
-        // Initialize with sample data if empty
-        initializeSampleData: () => {
-          const { subscriptions } = get();
-          if (subscriptions.length === 0) {
-            const sampleSubscriptions = getSampleSubscriptions();
-
-            set(() => ({
-              subscriptions: sampleSubscriptions,
-              filteredSubscriptions: get().applyFilters(sampleSubscriptions),
-            }));
+            
+            // Load user subscriptions
+            await get().loadSubscriptions();
+            
+            // Set up real-time subscription
+            get().setupRealtimeSubscription();
           } else {
-            // If subscriptions exist but filteredSubscriptions is empty, refresh it
-            const { filteredSubscriptions } = get();
-            if (filteredSubscriptions.length === 0 && subscriptions.length > 0) {
-              get().refreshFilteredSubscriptions();
-            }
+            set({ 
+              user: null, 
+              isAuthenticated: false,
+              authLoading: false,
+              subscriptions: [],
+              filteredSubscriptions: []
+            });
           }
-        },
+        } catch (error) {
+          console.error('Error initializing store:', error);
+          set({ 
+            error: error.message,
+            authLoading: false,
+            isLoading: false
+          });
+        }
+      },
 
-        setLoading: (loading) => {
-          set({ isLoading: loading });
-        },
-      }),
-      {
-        name: 'subscription-tracker-storage',
-        partialize: (state) => ({
-          subscriptions: state.subscriptions,
-          activeFilters: state.activeFilters,
-        }),
-        onRehydrateStorage: () => (state, error) => {
-          // After rehydration, ensure filteredSubscriptions is properly set
-          if (!error && state) {
-            // Use setTimeout to ensure this runs after the store is fully initialized
-            setTimeout(() => {
-              const currentState = useSubscriptionStore.getState();
-              if (currentState.subscriptions.length > 0 && currentState.filteredSubscriptions.length === 0) {
-                currentState.refreshFilteredSubscriptions();
-              }
-            }, 0);
+      // Authentication methods
+      setUser: (user) => {
+        set({ 
+          user, 
+          isAuthenticated: !!user,
+          authLoading: false
+        });
+        
+        if (user) {
+          get().loadSubscriptions();
+          get().setupRealtimeSubscription();
+        } else {
+          get().cleanup();
+        }
+      },
+
+      // Cleanup when user logs out
+      cleanup: () => {
+        const { realtimeSubscription } = get();
+        if (realtimeSubscription) {
+          realtimeSubscription.unsubscribe();
+        }
+        
+        set({
+          subscriptions: [],
+          filteredSubscriptions: [],
+          selectedSubscription: null,
+          user: null,
+          isAuthenticated: false,
+          realtimeSubscription: null,
+          error: null
+        });
+      },
+
+      // Load subscriptions from Supabase
+      loadSubscriptions: async () => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          const { data, error } = await subscriptionService.getSubscriptions({
+            orderBy: 'created_at',
+            ascending: false
+          });
+          
+          if (error) {
+            set({ error: error.message, isLoading: false });
+            return;
           }
-        },
-      }
-    ),
-    { name: 'subscription-tracker' }
+          
+          const subscriptions = data || [];
+          set({ 
+            subscriptions,
+            filteredSubscriptions: get().applyFilters(subscriptions),
+            isLoading: false,
+            error: null
+          });
+        } catch (error) {
+          console.error('Error loading subscriptions:', error);
+          set({ 
+            error: error.message,
+            isLoading: false
+          });
+        }
+      },
+
+      // CRUD Operations
+      addSubscription: async (subscriptionData) => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          const { data, error } = await subscriptionService.createSubscription(subscriptionData);
+          
+          if (error) {
+            set({ error: error.message, isLoading: false });
+            return { success: false, error };
+          }
+          
+          // Reload subscriptions to get the latest data
+          await get().loadSubscriptions();
+          
+          return { success: true, data };
+        } catch (error) {
+          console.error('Error adding subscription:', error);
+          set({ 
+            error: error.message,
+            isLoading: false
+          });
+          return { success: false, error };
+        }
+      },
+
+      updateSubscription: async (id, updates) => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          const { data, error } = await subscriptionService.updateSubscription(id, updates);
+          
+          if (error) {
+            set({ error: error.message, isLoading: false });
+            return { success: false, error };
+          }
+          
+          // Update local state optimistically
+          const { subscriptions } = get();
+          const updatedSubscriptions = subscriptions.map(sub => 
+            sub.id === id ? { ...sub, ...data } : sub
+          );
+          
+          set({ 
+            subscriptions: updatedSubscriptions,
+            filteredSubscriptions: get().applyFilters(updatedSubscriptions),
+            isLoading: false
+          });
+          
+          return { success: true, data };
+        } catch (error) {
+          console.error('Error updating subscription:', error);
+          set({ 
+            error: error.message,
+            isLoading: false
+          });
+          return { success: false, error };
+        }
+      },
+
+      deleteSubscription: async (id) => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          const { success, error } = await subscriptionService.deleteSubscription(id);
+          
+          if (!success) {
+            set({ error: error.message, isLoading: false });
+            return { success: false, error };
+          }
+          
+          // Update local state
+          const { subscriptions } = get();
+          const updatedSubscriptions = subscriptions.filter(sub => sub.id !== id);
+          
+          set({ 
+            subscriptions: updatedSubscriptions,
+            filteredSubscriptions: get().applyFilters(updatedSubscriptions),
+            selectedSubscription: null,
+            isLoading: false
+          });
+          
+          return { success: true };
+        } catch (error) {
+          console.error('Error deleting subscription:', error);
+          set({ 
+            error: error.message,
+            isLoading: false
+          });
+          return { success: false, error };
+        }
+      },
+
+      toggleSubscriptionStatus: async (id) => {
+        set({ isLoading: true, error: null });
+        
+        try {
+          const { data, error } = await subscriptionService.toggleSubscriptionStatus(id);
+          
+          if (error) {
+            set({ error: error.message, isLoading: false });
+            return { success: false, error };
+          }
+          
+          // Update local state
+          const { subscriptions } = get();
+          const updatedSubscriptions = subscriptions.map(sub => 
+            sub.id === id ? { ...sub, ...data } : sub
+          );
+          
+          set({ 
+            subscriptions: updatedSubscriptions,
+            filteredSubscriptions: get().applyFilters(updatedSubscriptions),
+            isLoading: false
+          });
+          
+          return { success: true, data };
+        } catch (error) {
+          console.error('Error toggling subscription status:', error);
+          set({ 
+            error: error.message,
+            isLoading: false
+          });
+          return { success: false, error };
+        }
+      },
+
+      setSelectedSubscription: (subscription) => {
+        set({ selectedSubscription: subscription });
+      },
+
+      // Filtering and sorting
+      setFilters: (filters) => {
+        set((state) => {
+          const newFilters = { ...state.activeFilters, ...filters };
+          return {
+            activeFilters: newFilters,
+            filteredSubscriptions: get().applyFilters(state.subscriptions, newFilters),
+          };
+        });
+      },
+
+      applyFilters: (subscriptions, filters = null) => {
+        const activeFilters = filters || get().activeFilters;
+        let filtered = [...subscriptions];
+
+        // Filter by category
+        if (activeFilters.category !== 'all') {
+          filtered = filtered.filter(sub => sub.category === activeFilters.category);
+        }
+
+        // Filter by status
+        if (activeFilters.status !== 'all') {
+          const isActive = activeFilters.status === 'active';
+          filtered = filtered.filter(sub => sub.isActive === isActive);
+        }
+
+        // Sort
+        filtered.sort((a, b) => {
+          const aValue = a[activeFilters.sortBy];
+          const bValue = b[activeFilters.sortBy];
+          
+          let comparison = 0;
+          if (aValue < bValue) comparison = -1;
+          if (aValue > bValue) comparison = 1;
+          
+          return activeFilters.sortOrder === 'desc' ? -comparison : comparison;
+        });
+
+        return filtered;
+      },
+
+      // Analytics getters
+      getTotalMonthlySpending: () => {
+        const { subscriptions } = get();
+        return subscriptions
+          .filter(sub => sub.isActive)
+          .reduce((total, sub) => {
+            return total + calculateMonthlyAmount(sub.amount, sub.billingCycle);
+          }, 0);
+      },
+
+      getTotalYearlySpending: () => {
+        return get().getTotalMonthlySpending() * 12;
+      },
+
+      getSpendingByCategory: () => {
+        const { subscriptions } = get();
+        const activeSubscriptions = subscriptions.filter(sub => sub.isActive);
+        const totalMonthly = get().getTotalMonthlySpending();
+
+        const categoryData = activeSubscriptions.reduce((acc, sub) => {
+          const monthlyAmount = calculateMonthlyAmount(sub.amount, sub.billingCycle);
+          
+          if (!acc[sub.category]) {
+            acc[sub.category] = {
+              category: sub.category,
+              amount: 0,
+              count: 0,
+              percentage: 0,
+            };
+          }
+          
+          acc[sub.category].amount += monthlyAmount;
+          acc[sub.category].count += 1;
+          
+          return acc;
+        }, {});
+
+        // Calculate percentages
+        Object.values(categoryData).forEach(category => {
+          category.percentage = totalMonthly > 0 ? (category.amount / totalMonthly) * 100 : 0;
+        });
+
+        return Object.values(categoryData);
+      },
+
+      getUpcomingPayments: (days = 30) => {
+        const { subscriptions } = get();
+        const now = new Date();
+        const endDate = addDays(now, days);
+
+        return subscriptions
+          .filter(sub => sub.isActive)
+          .filter(sub => {
+            const paymentDate = new Date(sub.nextPaymentDate);
+            return isWithinInterval(paymentDate, { start: now, end: endDate });
+          })
+          .map(sub => ({
+            id: sub.id,
+            subscriptionName: sub.name,
+            amount: sub.amount,
+            currency: sub.currency,
+            dueDate: new Date(sub.nextPaymentDate),
+            category: sub.category,
+          }))
+          .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
+      },
+
+      getThisMonthPayments: () => {
+        const { subscriptions } = get();
+        const now = new Date();
+        const monthStart = startOfMonth(now);
+        const monthEnd = endOfMonth(now);
+
+        return subscriptions
+          .filter(sub => sub.isActive)
+          .filter(sub => {
+            const paymentDate = new Date(sub.nextPaymentDate);
+            return isWithinInterval(paymentDate, { start: monthStart, end: monthEnd });
+          });
+      },
+
+      // Real-time subscription setup
+      setupRealtimeSubscription: () => {
+        const { realtimeSubscription } = get();
+        
+        // Cleanup existing subscription
+        if (realtimeSubscription) {
+          realtimeSubscription.unsubscribe();
+        }
+        
+        // Set up new subscription
+        const subscription = subscriptionService.subscribeToChanges((payload) => {
+          console.log('Real-time change received:', payload);
+          
+          // Reload subscriptions when changes are detected
+          get().loadSubscriptions();
+        });
+        
+        set({ realtimeSubscription: subscription });
+      },
+
+      // Error handling
+      clearError: () => {
+        set({ error: null });
+      },
+
+      setLoading: (loading) => {
+        set({ isLoading: loading });
+      },
+    }),
+    { name: 'subscription-tracker-supabase' }
   )
 );
 

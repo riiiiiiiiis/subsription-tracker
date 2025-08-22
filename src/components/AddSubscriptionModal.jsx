@@ -156,13 +156,19 @@ const AddSubscriptionModal = ({
         description: formData.description || undefined,
       };
 
+      let result;
       if (isEditing) {
-        updateSubscription(editSubscription.id, subscriptionData);
+        result = await updateSubscription(editSubscription.id, subscriptionData);
       } else {
-        addSubscription(subscriptionData);
+        result = await addSubscription(subscriptionData);
       }
 
-      onClose();
+      if (result.success) {
+        onClose();
+      } else {
+        console.error('Error saving subscription:', result.error);
+        // You might want to show an error message to the user here
+      }
     } catch (error) {
       console.error('Error saving subscription:', error);
     } finally {
