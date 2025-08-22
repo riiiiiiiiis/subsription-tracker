@@ -80,7 +80,7 @@ export const subscriptionToDatabase = (subscription) => {
   
   // Remove undefined values
   return Object.fromEntries(
-    Object.entries(mapped).filter(([_, value]) => value !== undefined)
+    Object.entries(mapped).filter(([, value]) => value !== undefined)
   );
 };
 

@@ -32,21 +32,21 @@ export const getCategoryColor = (category) => {
 
 export const getCategoryLabel = (category) => {
   const labels = {
-    entertainment: 'Entertainment',
-    utilities: 'Utilities',
-    software: 'Software',
-    food: 'Food & Delivery',
-    health: 'Health & Fitness',
-    other: 'Other',
+    entertainment: 'Развлечения',
+    utilities: 'Коммунальные услуги',
+    software: 'Программное обеспечение',
+    food: 'Еда и доставка',
+    health: 'Здоровье и фитнес',
+    other: 'Другое',
   };
-  return labels[category] || 'Other';
+  return labels[category] || 'Другое';
 };
 
 export const getBillingCycleLabel = (cycle) => {
   const labels = {
-    weekly: 'Weekly',
-    monthly: 'Monthly',
-    yearly: 'Yearly',
+    weekly: 'неделю',
+    monthly: 'месяц',
+    yearly: 'год',
   };
   return labels[cycle];
 };
@@ -83,7 +83,7 @@ export const calculateNextPaymentDate = (lastPayment, cycle) => {
 };
 
 export const formatCurrency = (amount, currency = 'USD') => {
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('ru-RU', {
     style: 'currency',
     currency,
   }).format(amount);
@@ -98,23 +98,23 @@ export const validateSubscription = (subscription) => {
   const errors = {};
   
   if (!subscription.name || subscription.name.trim() === '') {
-    errors.name = 'Name is required';
+    errors.name = 'Требуется название';
   }
-  
+
   if (!subscription.amount || subscription.amount <= 0) {
-    errors.amount = 'Amount must be greater than 0';
+    errors.amount = 'Сумма должна быть больше 0';
   }
-  
+
   if (!subscription.billingCycle || !Object.values(BILLING_CYCLES).includes(subscription.billingCycle)) {
-    errors.billingCycle = 'Valid billing cycle is required';
+    errors.billingCycle = 'Укажите корректный период оплаты';
   }
-  
+
   if (!subscription.category || !Object.values(CATEGORIES).includes(subscription.category)) {
-    errors.category = 'Valid category is required';
+    errors.category = 'Укажите корректную категорию';
   }
-  
+
   if (!subscription.nextPaymentDate) {
-    errors.nextPaymentDate = 'Next payment date is required';
+    errors.nextPaymentDate = 'Требуется дата следующего платежа';
   }
   
   return {

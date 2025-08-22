@@ -4,7 +4,7 @@ import { useUnifiedAuth } from './UnifiedAuthProvider.jsx';
 import Loading from '../ui/Loading.jsx';
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading, isAuthenticated } = useUnifiedAuth();
+  const { loading, isAuthenticated } = useUnifiedAuth();
   const location = useLocation();
 
   // Show loading spinner while checking authentication
@@ -13,7 +13,7 @@ const ProtectedRoute = ({ children }) => {
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <Loading size="lg" />
-          <p className="mt-4 text-gray-600">Loading your dashboard...</p>
+          <p className="mt-4 text-gray-600">Загрузка панели...</p>
         </div>
       </div>
     );

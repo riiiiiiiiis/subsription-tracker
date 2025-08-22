@@ -10,11 +10,10 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { shallow } from 'zustand/shallow';
 import { useShallow } from 'zustand/react/shallow';
 import useUnifiedStore from '@/store/unified-store';
 import { Card, Button } from '@/components/ui';
-import { formatCurrency, getCategoryColor, getCategoryLabel } from '@/types';
+import { formatCurrency, getCategoryColor, getCategoryLabel, getBillingCycleLabel } from '@/types';
 
 const Dashboard = () => {
   // Optimized unified store selectors with shallow comparison
@@ -42,25 +41,25 @@ const Dashboard = () => {
 
   const stats = [
     {
-      name: 'Monthly Spending',
+      name: 'Ежемесячные расходы',
       value: formatCurrency(totalMonthly),
       icon: DollarSign,
       color: 'text-green-600 bg-green-50',
     },
     {
-      name: 'Yearly Spending',
+      name: 'Годовые расходы',
       value: formatCurrency(totalYearly),
       icon: TrendingUp,
       color: 'text-blue-600 bg-blue-50',
     },
     {
-      name: 'Active Subscriptions',
+      name: 'Активные подписки',
       value: activeSubscriptions.length.toString(),
       icon: CreditCard,
       color: 'text-purple-600 bg-purple-50',
     },
     {
-      name: 'Payments This Month',
+      name: 'Платежи в этом месяце',
       value: thisMonthPayments.length.toString(),
       icon: Calendar,
       color: 'text-orange-600 bg-orange-50',
@@ -72,15 +71,15 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Панель управления</h1>
           <p className="text-gray-600 mt-1">
-            Track your subscriptions and spending
+            Отслеживайте подписки и расходы
           </p>
         </div>
         <Link to="/subscriptions">
           <Button className="flex items-center space-x-2">
             <Plus className="h-4 w-4" />
-            <span>Add Subscription</span>
+            <span>Добавить подписку</span>
           </Button>
         </Link>
       </div>
@@ -116,13 +115,13 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <Card.Title className="flex items-center space-x-2">
                 <Clock className="h-5 w-5 text-orange-500" />
-                <span>Upcoming Payments</span>
+                <span>Ближайшие платежи</span>
               </Card.Title>
               <Link 
                 to="/subscriptions" 
                 className="text-sm text-primary-600 hover:text-primary-700"
               >
-                View all
+                Все
               </Link>
             </div>
           </Card.Header>
@@ -156,7 +155,7 @@ const Dashboard = () => {
             ) : (
               <div className="text-center py-8 text-gray-500">
                 <Calendar className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                <p>No upcoming payments in the next week</p>
+                <p>Нет платежей на следующей неделе</p>
               </div>
             )}
           </Card.Content>
@@ -168,13 +167,13 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <Card.Title className="flex items-center space-x-2">
                 <CreditCard className="h-5 w-5 text-blue-500" />
-                <span>Recent Subscriptions</span>
+                <span>Недавние подписки</span>
               </Card.Title>
               <Link 
                 to="/subscriptions" 
                 className="text-sm text-primary-600 hover:text-primary-700"
               >
-                Manage all
+                Управлять всеми
               </Link>
             </div>
           </Card.Header>
@@ -202,7 +201,7 @@ const Dashboard = () => {
                           {formatCurrency(subscription.amount, subscription.currency)}
                         </p>
                         <p className="text-sm text-gray-500">
-                          per {subscription.billingCycle}
+                          за {getBillingCycleLabel(subscription.billingCycle)}
                         </p>
                       </div>
                     </div>
@@ -211,9 +210,9 @@ const Dashboard = () => {
             ) : (
               <div className="text-center py-8 text-gray-500">
                 <CreditCard className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                <p className="mb-3">No subscriptions yet</p>
+                <p className="mb-3">Подписок пока нет</p>
                 <Link to="/subscriptions">
-                  <Button size="sm">Add your first subscription</Button>
+                  <Button size="sm">Добавьте первую подписку</Button>
                 </Link>
               </div>
             )}
@@ -228,16 +227,16 @@ const Dashboard = () => {
             <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5" />
             <div>
               <h3 className="font-medium text-amber-800">
-                High Monthly Spending Detected
+                Обнаружены высокие ежемесячные расходы
               </h3>
               <p className="text-amber-700 mt-1">
-                You're spending {formatCurrency(totalMonthly)} monthly on subscriptions. 
-                Consider reviewing your subscriptions to optimize costs.
+                Вы тратите {formatCurrency(totalMonthly)} в месяц на подписки.
+                Рекомендуем пересмотреть их, чтобы оптимизировать расходы.
               </p>
               <div className="mt-3">
                 <Link to="/analytics">
                   <Button variant="outline" size="sm" className="bg-white border-amber-300 text-amber-700 hover:bg-amber-100">
-                    View Analytics
+                    Посмотреть аналитику
                   </Button>
                 </Link>
               </div>

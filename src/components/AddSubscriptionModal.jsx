@@ -43,9 +43,9 @@ const AddSubscriptionModal = ({
 
   // Billing cycle options
   const billingCycleOptions = [
-    { value: 'weekly', label: 'Weekly' },
-    { value: 'monthly', label: 'Monthly' },
-    { value: 'yearly', label: 'Yearly' },
+    { value: 'weekly', label: 'Еженедельно' },
+    { value: 'monthly', label: 'Ежемесячно' },
+    { value: 'yearly', label: 'Ежегодно' },
   ];
 
   // Currency options
@@ -111,19 +111,19 @@ const AddSubscriptionModal = ({
     const newErrors = {};
 
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = 'Требуется название';
     }
 
     if (!formData.amount || parseFloat(formData.amount) <= 0) {
-      newErrors.amount = 'Amount must be greater than 0';
+      newErrors.amount = 'Сумма должна быть больше 0';
     }
 
     if (!formData.nextPaymentDate) {
-      newErrors.nextPaymentDate = 'Next payment date is required';
+      newErrors.nextPaymentDate = 'Требуется дата следующего платежа';
     }
 
     if (formData.website && !isValidUrl(formData.website)) {
-      newErrors.website = 'Please enter a valid URL';
+      newErrors.website = 'Введите корректный URL';
     }
 
     setErrors(newErrors);
@@ -134,7 +134,7 @@ const AddSubscriptionModal = ({
     try {
       new URL(string);
       return true;
-    } catch (_) {
+    } catch {
       return false;
     }
   };
@@ -181,14 +181,14 @@ const AddSubscriptionModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={isEditing ? 'Edit Subscription' : 'Add New Subscription'}
+      title={isEditing ? 'Редактировать подписку' : 'Добавить подписку'}
       size="md"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Name */}
         <Input
-          label="Name"
-          placeholder="e.g., Netflix, Spotify"
+          label="Название"
+          placeholder="например, Netflix, Spotify"
           value={formData.name}
           onChange={handleInputChange('name')}
           error={errors.name}
@@ -197,8 +197,8 @@ const AddSubscriptionModal = ({
 
         {/* Description */}
         <Input
-          label="Description"
-          placeholder="Optional description"
+          label="Описание"
+          placeholder="Необязательное описание"
           value={formData.description}
           onChange={handleInputChange('description')}
           error={errors.description}
@@ -207,7 +207,7 @@ const AddSubscriptionModal = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Amount */}
           <Input
-            label="Amount"
+            label="Сумма"
             type="number"
             step="0.01"
             min="0"
@@ -220,7 +220,7 @@ const AddSubscriptionModal = ({
 
           {/* Currency */}
           <Select
-            label="Currency"
+            label="Валюта"
             value={formData.currency}
             onChange={handleInputChange('currency')}
             options={currencyOptions}
@@ -231,7 +231,7 @@ const AddSubscriptionModal = ({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Billing Cycle */}
           <Select
-            label="Billing Cycle"
+            label="Период оплаты"
             value={formData.billingCycle}
             onChange={handleInputChange('billingCycle')}
             options={billingCycleOptions}
@@ -240,7 +240,7 @@ const AddSubscriptionModal = ({
 
           {/* Category */}
           <Select
-            label="Category"
+            label="Категория"
             value={formData.category}
             onChange={handleInputChange('category')}
             options={categoryOptions}
@@ -250,7 +250,7 @@ const AddSubscriptionModal = ({
 
         {/* Next Payment Date */}
         <Input
-          label="Next Payment Date"
+          label="Дата следующего платежа"
           type="date"
           value={formData.nextPaymentDate}
           onChange={handleInputChange('nextPaymentDate')}
@@ -260,7 +260,7 @@ const AddSubscriptionModal = ({
 
         {/* Website */}
         <Input
-          label="Website"
+          label="Веб-сайт"
           type="url"
           placeholder="https://example.com"
           value={formData.website}
@@ -278,7 +278,7 @@ const AddSubscriptionModal = ({
             className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
           />
           <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
-            Active subscription
+            Активная подписка
           </label>
         </div>
 
@@ -290,15 +290,15 @@ const AddSubscriptionModal = ({
             onClick={onClose}
             disabled={isSubmitting}
           >
-            Cancel
+            Отмена
           </Button>
           <Button
             type="submit"
             disabled={isSubmitting}
           >
-            {isSubmitting 
-              ? (isEditing ? 'Updating...' : 'Adding...') 
-              : (isEditing ? 'Update Subscription' : 'Add Subscription')
+            {isSubmitting
+              ? (isEditing ? 'Обновление...' : 'Добавление...')
+              : (isEditing ? 'Обновить подписку' : 'Добавить подписку')
             }
           </Button>
         </div>

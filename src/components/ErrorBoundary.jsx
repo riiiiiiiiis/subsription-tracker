@@ -13,7 +13,7 @@ class ErrorBoundary extends React.Component {
     };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     // Update state so the next render will show the fallback UI
     return { hasError: true };
   }
@@ -51,12 +51,11 @@ class ErrorBoundary extends React.Component {
             </div>
             
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              Oops! Something went wrong
+              Упс! Что-то пошло не так
             </h1>
-            
+
             <p className="text-gray-600 mb-6">
-              We encountered an unexpected error. This has been logged and our team 
-              will look into it. You can try refreshing the page or clicking the button below.
+              Произошла непредвиденная ошибка. Мы уже её зарегистрировали и обязательно изучим. Вы можете обновить страницу или нажать на кнопку ниже.
             </p>
 
             <div className="space-y-4">
@@ -65,7 +64,7 @@ class ErrorBoundary extends React.Component {
                 className="w-full flex items-center justify-center space-x-2"
               >
                 <RefreshCw className="h-4 w-4" />
-                <span>Try Again</span>
+                <span>Попробовать снова</span>
               </Button>
               
               <Button 
@@ -73,22 +72,22 @@ class ErrorBoundary extends React.Component {
                 onClick={() => window.location.reload()}
                 className="w-full"
               >
-                Refresh Page
+                Обновить страницу
               </Button>
             </div>
 
             {/* Show error details in development */}
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <details className="mt-6 text-left">
                 <summary className="cursor-pointer text-sm font-medium text-gray-700 mb-2">
-                  Error Details (Development Only)
+                  Подробности ошибки (только для разработки)
                 </summary>
                 <div className="bg-red-50 border border-red-200 rounded p-4 text-xs">
-                  <div className="font-medium text-red-800 mb-2">Error:</div>
+                  <div className="font-medium text-red-800 mb-2">Ошибка:</div>
                   <pre className="text-red-700 whitespace-pre-wrap mb-4">
                     {this.state.error && this.state.error.toString()}
                   </pre>
-                  <div className="font-medium text-red-800 mb-2">Component Stack:</div>
+                  <div className="font-medium text-red-800 mb-2">Стек компонентов:</div>
                   <pre className="text-red-700 whitespace-pre-wrap">
                     {this.state.errorInfo.componentStack}
                   </pre>

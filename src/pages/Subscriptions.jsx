@@ -8,7 +8,6 @@ import {
   SortAsc,
   SortDesc 
 } from 'lucide-react';
-import { shallow } from 'zustand/shallow';
 import { useShallow } from 'zustand/react/shallow';
 import useUnifiedStore from '@/store/unified-store';
 import { Button, Input, Select, Card } from '@/components/ui';
@@ -56,7 +55,7 @@ const Subscriptions = () => {
 
   // Filter options
   const categoryOptions = [
-    { value: 'all', label: 'All Categories' },
+    { value: 'all', label: 'Все категории' },
     { value: 'entertainment', label: getCategoryLabel('entertainment') },
     { value: 'utilities', label: getCategoryLabel('utilities') },
     { value: 'software', label: getCategoryLabel('software') },
@@ -66,16 +65,16 @@ const Subscriptions = () => {
   ];
 
   const statusOptions = [
-    { value: 'all', label: 'All Status' },
-    { value: 'active', label: 'Active' },
-    { value: 'inactive', label: 'Inactive' },
+    { value: 'all', label: 'Все статусы' },
+    { value: 'active', label: 'Активные' },
+    { value: 'inactive', label: 'Неактивные' },
   ];
 
   const sortOptions = [
-    { value: 'name', label: 'Name' },
-    { value: 'amount', label: 'Amount' },
-    { value: 'nextPayment', label: 'Next Payment' },
-    { value: 'createdAt', label: 'Date Added' },
+    { value: 'name', label: 'Название' },
+    { value: 'amount', label: 'Сумма' },
+    { value: 'nextPayment', label: 'Следующий платеж' },
+    { value: 'createdAt', label: 'Дата добавления' },
   ];
 
   // Filter subscriptions by search term
@@ -121,9 +120,9 @@ const Subscriptions = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-4 sm:space-y-0">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Subscriptions</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Подписки</h1>
           <p className="text-gray-600 mt-1">
-            Manage your recurring subscriptions
+            Управляйте своими подписками
           </p>
         </div>
         <Button 
@@ -131,7 +130,7 @@ const Subscriptions = () => {
           className="flex items-center space-x-2"
         >
           <Plus className="h-4 w-4" />
-          <span>Add Subscription</span>
+          <span>Добавить подписку</span>
         </Button>
       </div>
 
@@ -144,7 +143,7 @@ const Subscriptions = () => {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search subscriptions..."
+                placeholder="Поиск подписок..."
                 className="pl-10 input-field"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -181,7 +180,7 @@ const Subscriptions = () => {
                 size="sm"
                 onClick={handleSortOrderToggle}
                 className="px-2"
-                title={`Sort ${filters.sortOrder === 'asc' ? 'Ascending' : 'Descending'}`}
+                title={`Сортировать ${filters.sortOrder === 'asc' ? 'по возрастанию' : 'по убыванию'}`}
               >
                 {filters.sortOrder === 'asc' ? (
                   <SortAsc className="h-4 w-4" />
@@ -217,7 +216,7 @@ const Subscriptions = () => {
       {/* Results Stats */}
       <div className="flex items-center justify-between text-sm text-gray-600">
         <span>
-          Showing {searchFilteredSubscriptions.length} of {filteredSubscriptions.length} subscriptions
+          Показано {searchFilteredSubscriptions.length} из {filteredSubscriptions.length} подписок
         </span>
         {(searchTerm || filters.category !== 'all' || filters.status !== 'all') && (
           <Button
@@ -233,7 +232,7 @@ const Subscriptions = () => {
               });
             }}
           >
-            Clear filters
+            Сбросить фильтры
           </Button>
         )}
       </div>
@@ -261,16 +260,16 @@ const Subscriptions = () => {
             {searchTerm || filters.category !== 'all' || filters.status !== 'all' ? (
               <>
                 <Filter className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <h3 className="text-lg font-medium mb-2">No subscriptions found</h3>
-                <p>Try adjusting your search or filters</p>
+                <h3 className="text-lg font-medium mb-2">Подписки не найдены</h3>
+                <p>Попробуйте изменить поиск или фильтры</p>
               </>
             ) : (
               <>
                 <Plus className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <h3 className="text-lg font-medium mb-2">No subscriptions yet</h3>
-                <p className="mb-4">Start tracking your recurring expenses</p>
+                <h3 className="text-lg font-medium mb-2">Подписок пока нет</h3>
+                <p className="mb-4">Начните отслеживать регулярные расходы</p>
                 <Button onClick={handleAddSubscription}>
-                  Add your first subscription
+                  Добавьте первую подписку
                 </Button>
               </>
             )}

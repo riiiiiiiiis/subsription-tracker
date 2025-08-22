@@ -10,7 +10,6 @@ import {
   User,
   LogOut
 } from 'lucide-react';
-import { shallow } from 'zustand/shallow';
 import { useShallow } from 'zustand/react/shallow';
 import { Button } from '@/components/ui';
 import { useUnifiedAuth } from '../auth/UnifiedAuthProvider.jsx';
@@ -50,7 +49,7 @@ const Header = () => {
       return user.email.split('@')[0];
     }
     
-    return 'User';
+    return 'Пользователь';
   };
   
   const displayName = getDisplayName();
@@ -82,10 +81,10 @@ const Header = () => {
   }, []);
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-    { name: 'Subscriptions', href: '/subscriptions', icon: CreditCard },
-    { name: 'Analytics', href: '/analytics', icon: BarChart3 },
-    { name: 'Settings', href: '/settings', icon: Settings },
+    { name: 'Панель', href: '/', icon: LayoutDashboard },
+    { name: 'Подписки', href: '/subscriptions', icon: CreditCard },
+    { name: 'Аналитика', href: '/analytics', icon: BarChart3 },
+    { name: 'Настройки', href: '/settings', icon: Settings },
   ];
 
   const isActive = (path) => {
@@ -148,7 +147,7 @@ const Header = () => {
         {/* User menu */}
         <div className="flex items-center space-x-4">
           <Button variant="outline" size="sm">
-            Export Data
+            Экспорт данных
           </Button>
           
           {/* User dropdown */}
@@ -184,7 +183,7 @@ const Header = () => {
                     className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                   >
                     <LogOut className="h-4 w-4" />
-                    <span>{loading ? 'Signing out...' : 'Sign out'}</span>
+                    <span>{loading ? 'Выход...' : 'Выйти'}</span>
                   </button>
                 </div>
               </div>
