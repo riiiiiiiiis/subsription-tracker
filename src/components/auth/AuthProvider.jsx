@@ -200,23 +200,32 @@ export const AuthProvider = ({ children }) => {
   };
 
   const signOut = async () => {
+    console.log('🔓 SignOut: Starting logout process...');
     try {
       setLoading(true);
       setError(null);
+      console.log('🔓 SignOut: Set loading to true');
       
+      console.log('🔓 SignOut: Calling supabase.auth.signOut()');
       const { error } = await supabase.auth.signOut();
+      console.log('🔓 SignOut: Supabase signOut completed', { error });
       
       if (error) {
+        console.error('🔓 SignOut: Error during logout:', error);
         setError(error);
+        setLoading(false); // Only set loading false on error
         return { error };
       }
       
+      console.log('🔓 SignOut: Logout successful, waiting for auth state change...');
+      // Don't set loading to false here - let onAuthStateChange handle it
+      // when the SIGNED_OUT event is triggered to avoid race conditions
       return { success: true };
     } catch (error) {
+      console.error('🔓 SignOut: Unexpected error during logout:', error);
       setError(error);
+      setLoading(false); // Only set loading false on error
       return { error };
-    } finally {
-      setLoading(false);
     }
   };
 

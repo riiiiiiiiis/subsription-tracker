@@ -12,37 +12,63 @@ const useSubscriptionStore = create(
   devtools(
     persist(
       (set, get) => ({
-      // State
-      subscriptions: [],
-      filteredSubscriptions: [],
-      activeFilters: {
+      // Auth state (single source of truth)
+      auth: {
+        user: null,
+        profile: null,
+        session: null,
+        isAuthenticated: false,
+        isLoading: true,
+        error: null,
+        lastProfileLoad: null,
+      },
+      
+      // Data state
+      data: {
+        subscriptions: [],
+        filteredSubscriptions: [],
+        isLoading: false,
+        error: null,
+        lastSync: null,
+      },
+      
+      // Filter state
+      filters: {
         category: 'all',
         status: 'all',
         sortBy: 'name',
         sortOrder: 'asc',
       },
-      isLoading: false,
-      selectedSubscription: null,
-      error: null,
       
-      // Real-time subscription
-      realtimeSubscription: null,
+      // Real-time state
+      realtime: {
+        subscriptionsChannel: null,
+        profileChannel: null,
+        connectionStatus: 'disconnected',
+        reconnectAttempts: 0,
+      },
       
-      // Auth state
-      user: null,
-      profile: null,
-      isAuthenticated: false,
-      authLoading: true,
+      // UI state
+      ui: {
+        selectedSubscription: null,
+      },
 
-      // Initialize the store
+      // Initialize the store - single source of truth for authentication
       initialize: async () => {
-        console.log('🚀 Store: Initialize called');
-        set({ isLoading: true, authLoading: true });
+        console.log('🚀 Store: Unified initialize called');
+        set(state => ({
+          auth: { ...state.auth, isLoading: true, error: null }
+        }));
         
         try {
-          // Check authentication
+          // Check authentication with session restoration
           console.log('🔐 Store: Checking authentication...');
-          const { data: { session } } = await supabase.auth.getSession();
+          const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+          
+          if (sessionError) {
+            throw new Error(`Session error: ${sessionError.message}`);
+          }
+          
           console.log('🔑 Store: Session check result:', { 
             hasSession: !!session, 
             hasUser: !!session?.user, 
@@ -50,58 +76,43 @@ const useSubscriptionStore = create(
           });
           
           if (session?.user) {
-            console.log('✅ Store: User authenticated, setting user and loading data...');
+            console.log('✅ Store: User authenticated, initializing user state...');
             
-            // Check if we have persisted data
-            const currentState = get();
-            const hasPersistedData = currentState.subscriptions && currentState.subscriptions.length > 0;
+            // Set authenticated user state
+            set(state => ({
+              auth: {
+                ...state.auth,
+                user: session.user,
+                session,
+                isAuthenticated: true,
+                isLoading: false,
+                error: null
+              }
+            }));
             
-            set({ 
-              user: session.user, 
-              isAuthenticated: true,
-              authLoading: false 
-            });
-            
-            // Load profile data
+            // Load user data in sequence with error handling
             await get().loadUserProfile(session.user.id);
+            await get().loadUserSubscriptions();
             
-            if (hasPersistedData) {
-              console.log('📦 Store: Using persisted subscriptions data');
-              // Refresh filtered subscriptions with persisted data
-              set({
-                filteredSubscriptions: get().applyFilters(currentState.subscriptions),
-                isLoading: false
-              });
-              
-              // Load fresh data in background
-              console.log('🔄 Store: Loading fresh data in background...');
-              await get().loadSubscriptions();
-            } else {
-              console.log('📦 Store: No persisted data, loading from server...');
-              // Load user subscriptions from server
-              await get().loadSubscriptions();
-            }
-            
-            // Set up real-time subscription
-            console.log('📶 Store: Setting up real-time subscription...');
-            get().setupRealtimeSubscription();
+            // Setup real-time connections with user-specific channels
+            get().setupRealtimeConnections();
           } else {
             console.log('❌ Store: No authenticated user found');
-            set({ 
-              user: null, 
-              isAuthenticated: false,
-              authLoading: false,
-              subscriptions: [],
-              filteredSubscriptions: []
-            });
+            get().resetToUnauthenticated();
           }
         } catch (error) {
           console.error('💥 Store: Error initializing store:', error);
-          set({ 
-            error: error.message,
-            authLoading: false,
-            isLoading: false
-          });
+          set(state => ({
+            auth: {
+              ...state.auth,
+              error: error.message,
+              isLoading: false
+            },
+            data: {
+              ...state.data,
+              isLoading: false
+            }
+          }));
         }
       },
 

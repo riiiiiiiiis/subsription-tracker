@@ -10,18 +10,17 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
-import useSubscriptionStore from '@/store';
+import useUnifiedStore from '@/store/unified-store';
 import { Card, Button } from '@/components/ui';
 import { formatCurrency, getCategoryColor, getCategoryLabel } from '@/types';
 
 const Dashboard = () => {
-  const {
-    subscriptions,
-    getTotalMonthlySpending,
-    getTotalYearlySpending,
-    getUpcomingPayments,
-    getThisMonthPayments
-  } = useSubscriptionStore();
+  // Use unified store
+  const subscriptions = useUnifiedStore(state => state.data.subscriptions);
+  const getTotalMonthlySpending = useUnifiedStore(state => state.getTotalMonthlySpending);
+  const getTotalYearlySpending = useUnifiedStore(state => state.getTotalYearlySpending);
+  const getUpcomingPayments = useUnifiedStore(state => state.getUpcomingPayments);
+  const getThisMonthPayments = useUnifiedStore(state => state.getThisMonthPayments);
 
   const totalMonthly = getTotalMonthlySpending();
   const totalYearly = getTotalYearlySpending();

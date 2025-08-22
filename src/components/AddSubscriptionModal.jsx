@@ -4,7 +4,7 @@ import Modal from '@/components/ui/Modal.jsx';
 import Button from '@/components/ui/Button.jsx';
 import Input from '@/components/ui/Input.jsx';
 import Select from '@/components/ui/Select.jsx';
-import useSubscriptionStore from '@/store';
+import useUnifiedStore from '@/store/unified-store';
 import { getCategoryLabel } from '@/types';
 
 const AddSubscriptionModal = ({ 
@@ -12,7 +12,8 @@ const AddSubscriptionModal = ({
   onClose, 
   editSubscription = null 
 }) => {
-  const { addSubscription, updateSubscription } = useSubscriptionStore();
+  const addSubscription = useUnifiedStore(state => state.addSubscription);
+  const updateSubscription = useUnifiedStore(state => state.updateSubscription);
   const isEditing = !!editSubscription;
 
   const [formData, setFormData] = useState({

@@ -18,7 +18,7 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
-import useSubscriptionStore from '@/store';
+import useUnifiedStore from '@/store/unified-store';
 import { Card } from '@/components/ui';
 import { 
   formatCurrency, 
@@ -27,13 +27,12 @@ import {
 } from '@/types';
 
 const Analytics = () => {
-  const {
-    subscriptions,
-    getTotalMonthlySpending,
-    getTotalYearlySpending,
-    getSpendingByCategory,
-    getUpcomingPayments
-  } = useSubscriptionStore();
+  // Use unified store
+  const subscriptions = useUnifiedStore(state => state.data.subscriptions);
+  const getTotalMonthlySpending = useUnifiedStore(state => state.getTotalMonthlySpending);
+  const getTotalYearlySpending = useUnifiedStore(state => state.getTotalYearlySpending);
+  const getSpendingByCategory = useUnifiedStore(state => state.getSpendingByCategory);
+  const getUpcomingPayments = useUnifiedStore(state => state.getUpcomingPayments);
 
   const totalMonthly = getTotalMonthlySpending();
   const totalYearly = getTotalYearlySpending();

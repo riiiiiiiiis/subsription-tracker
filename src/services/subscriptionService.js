@@ -293,35 +293,102 @@ class SubscriptionService {
   }
 
   /**
-   * Subscribe to real-time changes for subscriptions
+   * Subscribe to real-time changes for subscriptions with user-specific channel
    * @param {Function} callback - Callback function to handle changes
+   * @param {string} userId - User ID for user-specific channel
    * @returns {Object} Subscription object with unsubscribe method
    */
-  subscribeToChanges(callback) {
+  subscribeToChanges(callback, userId = null) {
     try {
+      // Get user ID if not provided
+      if (!userId) {
+        console.warn('⚠️ SubscriptionService: No userId provided for real-time subscription');
+        return {
+          unsubscribe: () => {}
+        };
+      }
+
+      console.log('📶 SubscriptionService: Setting up user-specific real-time subscription for:', userId);
+      
+      const channelName = `user:${userId}:subscriptions`;
       const subscription = supabase
-        .channel('subscriptions-changes')
+        .channel(channelName)
         .on(
           'postgres_changes',
           {
             event: '*', // Listen to all events (INSERT, UPDATE, DELETE)
             schema: 'public',
             table: 'subscriptions',
+            filter: `user_id=eq.${userId}`, // Only listen to current user's changes
           },
           (payload) => {
-            console.log('Subscription change detected:', payload);
+            console.log('📨 SubscriptionService: Subscription change detected for user:', userId, payload);
             callback(payload);
           }
         )
-        .subscribe();
+        .subscribe((status) => {
+          console.log('📡 SubscriptionService: Channel status for', channelName, ':', status);
+        });
 
       return {
         unsubscribe: () => {
+          console.log('🧹 SubscriptionService: Unsubscribing from channel:', channelName);
           supabase.removeChannel(subscription);
         }
       };
     } catch (error) {
-      console.error('Error setting up real-time subscription:', error);
+      console.error('💥 SubscriptionService: Error setting up real-time subscription:', error);
+      return {
+        unsubscribe: () => {}
+      };
+    }
+  }
+
+  /**
+   * Subscribe to profile changes for a specific user
+   * @param {Function} callback - Callback function to handle changes
+   * @param {string} userId - User ID for user-specific channel
+   * @returns {Object} Subscription object with unsubscribe method
+   */
+  subscribeToProfileChanges(callback, userId = null) {
+    try {
+      if (!userId) {
+        console.warn('⚠️ SubscriptionService: No userId provided for profile subscription');
+        return {
+          unsubscribe: () => {}
+        };
+      }
+
+      console.log('📶 SubscriptionService: Setting up profile real-time subscription for:', userId);
+      
+      const channelName = `user:${userId}:profile`;
+      const subscription = supabase
+        .channel(channelName)
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'profiles',
+            filter: `id=eq.${userId}`,
+          },
+          (payload) => {
+            console.log('👤 SubscriptionService: Profile change detected for user:', userId, payload);
+            callback(payload);
+          }
+        )
+        .subscribe((status) => {
+          console.log('📡 SubscriptionService: Profile channel status for', channelName, ':', status);
+        });
+
+      return {
+        unsubscribe: () => {
+          console.log('🧹 SubscriptionService: Unsubscribing from profile channel:', channelName);
+          supabase.removeChannel(subscription);
+        }
+      };
+    } catch (error) {
+      console.error('💥 SubscriptionService: Error setting up profile real-time subscription:', error);
       return {
         unsubscribe: () => {}
       };

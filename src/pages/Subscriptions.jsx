@@ -8,22 +8,21 @@ import {
   SortAsc,
   SortDesc 
 } from 'lucide-react';
-import useSubscriptionStore from '@/store';
+import useUnifiedStore from '@/store/unified-store';
 import { Button, Input, Select, Card } from '@/components/ui';
 import SubscriptionCard from '../components/SubscriptionCard.jsx';
 import AddSubscriptionModal from '../components/AddSubscriptionModal.jsx';
 import { getCategoryLabel } from '@/types';
 
 const Subscriptions = () => {
-  const {
-    subscriptions,
-    filteredSubscriptions,
-    activeFilters,
-    setFilters,
-    deleteSubscription,
-    toggleSubscriptionStatus,
-    refreshFilteredSubscriptions
-  } = useSubscriptionStore();
+  // Use unified store
+  const subscriptions = useUnifiedStore(state => state.data.subscriptions);
+  const filteredSubscriptions = useUnifiedStore(state => state.data.filteredSubscriptions);
+  const filters = useUnifiedStore(state => state.filters);
+  const setFilters = useUnifiedStore(state => state.setFilters);
+  const deleteSubscription = useUnifiedStore(state => state.deleteSubscription);
+  const toggleSubscriptionStatus = useUnifiedStore(state => state.toggleSubscriptionStatus);
+  const applyFilters = useUnifiedStore(state => state.applyFilters);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState(null);
@@ -33,9 +32,13 @@ const Subscriptions = () => {
   // Ensure filteredSubscriptions is updated when subscriptions change
   useEffect(() => {
     if (subscriptions.length > 0 && filteredSubscriptions.length === 0) {
-      refreshFilteredSubscriptions();
+      // Apply current filters to subscriptions
+      const filtered = applyFilters(subscriptions, filters);
+      if (filtered.length > 0) {
+        setFilters({}); // Trigger filter update to refresh filteredSubscriptions
+      }
     }
-  }, [subscriptions, filteredSubscriptions, refreshFilteredSubscriptions]);
+  }, [subscriptions, filteredSubscriptions, applyFilters, filters, setFilters]);
 
   // Filter options
   const categoryOptions = [
@@ -72,7 +75,7 @@ const Subscriptions = () => {
   };
 
   const handleSortOrderToggle = () => {
-    const newOrder = activeFilters.sortOrder === 'asc' ? 'desc' : 'asc';
+    const newOrder = filters.sortOrder === 'asc' ? 'desc' : 'asc';
     setFilters({ sortOrder: newOrder });
   };
 
@@ -138,14 +141,14 @@ const Subscriptions = () => {
           {/* Filters */}
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
             <Select
-              value={activeFilters.category}
+              value={filters.category}
               onChange={handleFilterChange('category')}
               options={categoryOptions}
               className="w-full sm:w-40"
             />
             
             <Select
-              value={activeFilters.status}
+              value={filters.status}
               onChange={handleFilterChange('status')}
               options={statusOptions}
               className="w-full sm:w-32"
@@ -153,7 +156,7 @@ const Subscriptions = () => {
             
             <div className="flex space-x-2">
               <Select
-                value={activeFilters.sortBy}
+                value={filters.sortBy}
                 onChange={handleFilterChange('sortBy')}
                 options={sortOptions}
                 className="w-32"
@@ -164,9 +167,9 @@ const Subscriptions = () => {
                 size="sm"
                 onClick={handleSortOrderToggle}
                 className="px-2"
-                title={`Sort ${activeFilters.sortOrder === 'asc' ? 'Ascending' : 'Descending'}`}
+                title={`Sort ${filters.sortOrder === 'asc' ? 'Ascending' : 'Descending'}`}
               >
-                {activeFilters.sortOrder === 'asc' ? (
+                {filters.sortOrder === 'asc' ? (
                   <SortAsc className="h-4 w-4" />
                 ) : (
                   <SortDesc className="h-4 w-4" />
@@ -202,7 +205,7 @@ const Subscriptions = () => {
         <span>
           Showing {searchFilteredSubscriptions.length} of {filteredSubscriptions.length} subscriptions
         </span>
-        {(searchTerm || activeFilters.category !== 'all' || activeFilters.status !== 'all') && (
+        {(searchTerm || filters.category !== 'all' || filters.status !== 'all') && (
           <Button
             variant="ghost"
             size="sm"
@@ -241,7 +244,7 @@ const Subscriptions = () => {
       ) : (
         <Card className="p-12 text-center">
           <div className="text-gray-500">
-            {searchTerm || activeFilters.category !== 'all' || activeFilters.status !== 'all' ? (
+            {searchTerm || filters.category !== 'all' || filters.status !== 'all' ? (
               <>
                 <Filter className="h-12 w-12 mx-auto mb-4 text-gray-300" />
                 <h3 className="text-lg font-medium mb-2">No subscriptions found</h3>

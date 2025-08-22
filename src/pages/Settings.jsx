@@ -1,10 +1,10 @@
 import React from 'react';
 import { Settings as SettingsIcon, Download, Trash2, Info } from 'lucide-react';
-import useSubscriptionStore from '@/store';
+import useUnifiedStore from '@/store/unified-store';
 import { Card, Button } from '@/components/ui';
 
 const Settings = () => {
-  const { subscriptions } = useSubscriptionStore();
+  const subscriptions = useUnifiedStore(state => state.data.subscriptions);
 
   const handleExportData = () => {
     const dataToExport = {
