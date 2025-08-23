@@ -36,7 +36,7 @@ const useUnifiedStore = create(
         filters: {
           category: 'all',
           status: 'all',
-          sortBy: 'nextPayment',
+          sortBy: 'nextPaymentDate',
           sortOrder: 'asc',
         },
         
@@ -861,8 +861,17 @@ const useUnifiedStore = create(
             const bValue = b[activeFilters.sortBy];
             
             let comparison = 0;
-            if (aValue < bValue) comparison = -1;
-            if (aValue > bValue) comparison = 1;
+            
+            // Special handling for date fields
+            if (activeFilters.sortBy === 'nextPaymentDate') {
+              const aDate = new Date(aValue);
+              const bDate = new Date(bValue);
+              comparison = aDate - bDate;
+            } else {
+              // Regular comparison for other fields
+              if (aValue < bValue) comparison = -1;
+              if (aValue > bValue) comparison = 1;
+            }
             
             return activeFilters.sortOrder === 'desc' ? -comparison : comparison;
           });

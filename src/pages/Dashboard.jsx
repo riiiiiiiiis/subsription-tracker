@@ -53,6 +53,7 @@ const Dashboard = () => {
   const totalMonthly = getTotalMonthlySpending();
   const totalYearly = getTotalYearlySpending();
   const upcomingPayments = getUpcomingPayments(7); // Next 7 days
+  const upcomingPayments30 = getUpcomingPayments(30); // Next 30 days
   const thisMonthPayments = getThisMonthPayments();
   const activeSubscriptions = subscriptions.filter(sub => sub.isActive);
 
@@ -61,7 +62,8 @@ const Dashboard = () => {
     if (subscriptions.length > 0 && filteredSubscriptions.length === 0) {
       const filtered = applyFilters(subscriptions, filters);
       if (filtered.length > 0) {
-        setFilters({});
+        // Force re-apply current filters instead of resetting them
+        setFilters(filters);
       }
     }
   }, [subscriptions, filteredSubscriptions, applyFilters, filters, setFilters]);
@@ -84,26 +86,15 @@ const Dashboard = () => {
 
   const stats = [
     {
-      name: 'Месячные расходы',
-      value: formatCurrency(totalMonthly),
-      icon: DollarSign,
-      color: 'text-green-600 bg-green-50',
-    },
-    {
-      name: 'Годовые расходы',
-      value: formatCurrency(totalYearly),
-      icon: TrendingUp,
-      color: 'text-blue-600 bg-blue-50',
-    },
-    {
       name: 'Активные подписки',
       value: activeSubscriptions.length.toString(),
       icon: CreditCard,
       color: 'text-purple-600 bg-purple-50',
     },
     {
-      name: 'Платежи в этом месяце',
-      value: thisMonthPayments.length.toString(),
+      name: 'Следующие 30 дней',
+      value: upcomingPayments30.length.toString(),
+      additionalInfo: 'предстоящих платежей',
       icon: Calendar,
       color: 'text-orange-600 bg-orange-50',
     },
@@ -125,32 +116,8 @@ const Dashboard = () => {
         </Button>
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => {
-          const Icon = stat.icon;
-          return (
-            <Card key={stat.name} className="p-6">
-              <div className="flex items-center">
-                <div className={`p-2 rounded-lg ${stat.color}`}>
-                  <Icon className="h-6 w-6" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">
-                    {stat.name}
-                  </p>
-                  <p className="text-2xl font-semibold text-gray-900">
-                    {stat.value}
-                  </p>
-                </div>
-              </div>
-            </Card>
-          );
-        })}
-      </div>
-
+      {/* Upcoming Payments */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Upcoming Payments */}
         <Card className="p-6">
           <Card.Header>
             <div className="flex items-center justify-between">
@@ -201,6 +168,53 @@ const Dashboard = () => {
             )}
           </Card.Content>
         </Card>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-3 lg:grid-cols-3">
+        {/* Combined Monthly/Yearly Spending */}
+        <Card className="p-6">
+          <div className="flex items-center">
+            <div className="p-2 rounded-lg bg-green-50">
+              <DollarSign className="h-6 w-6 text-green-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-600">Ежемесячно</p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {formatCurrency(totalMonthly)}
+              </p>
+              <p className="text-sm text-gray-500">
+                {formatCurrency(totalYearly)} в год
+              </p>
+            </div>
+          </div>
+        </Card>
+
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <Card key={stat.name} className="p-6">
+              <div className="flex items-center">
+                <div className={`p-2 rounded-lg ${stat.color}`}>
+                  <Icon className="h-6 w-6" />
+                </div>
+                <div className="ml-4">
+                  <p className="text-sm font-medium text-gray-600">
+                    {stat.name}
+                  </p>
+                  <p className="text-2xl font-semibold text-gray-900">
+                    {stat.value}
+                  </p>
+                  {stat.additionalInfo && (
+                    <p className="text-sm text-gray-500">
+                      {stat.additionalInfo}
+                    </p>
+                  )}
+                </div>
+              </div>
+            </Card>
+          );
+        })}
       </div>
 
       {/* Subscriptions Grid */}
