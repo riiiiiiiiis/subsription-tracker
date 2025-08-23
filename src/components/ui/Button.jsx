@@ -10,7 +10,7 @@ const Button = ({
   className = '',
   ...props 
 }) => {
-  const baseClasses = 'font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+  const baseClasses = 'font-medium rounded-lg transition-colors duration-200 focus-ring';
   
   const variants = {
     primary: 'bg-primary-500 hover:bg-primary-600 text-white focus:ring-primary-500',
@@ -26,7 +26,7 @@ const Button = ({
     lg: 'px-6 py-3 text-base',
   };
   
-  const disabledClasses = 'opacity-50 cursor-not-allowed';
+  const disabledClasses = 'disabled-state';
   
   const combinedClasses = [
     baseClasses,

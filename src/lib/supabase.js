@@ -31,19 +31,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   },
 });
 
-// Helper function to get the current user
-export const getCurrentUser = () => {
-  return supabase.auth.getUser();
-};
 
-// Helper function to get the current session
-export const getCurrentSession = () => {
-  return supabase.auth.getSession();
-};
-
-// Helper function to sign out
-export const signOut = () => {
-  return supabase.auth.signOut();
-};
 
 export default supabase;

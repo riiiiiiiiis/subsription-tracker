@@ -14,39 +14,33 @@ const FeaturesSection = () => {
   const features = [
     {
       icon: CreditCard,
-      title: 'Умное отслеживание подписок',
-      description: 'Автоматически категоризируйте и отслеживайте все свои подписки с интеллектуальным обнаружением расходов и категоризацией.',
-      benefits: ['Авто-категоризация', 'Обнаружение расходов', 'Отслеживание способов оплаты']
+      title: 'Ручное управление подписками',
+      description: 'Легко добавляйте и редактируйте свои подписки вручную с полным контролем над вашими данными.',
+      benefits: ['Добавление названия и стоимости', 'Выбор категории из списка', 'Удаление и редактирование']
     },
     {
       icon: BarChart3,
-      title: 'Продвинутая аналитика',
-      description: 'Получайте детальные сведения о ваших паттернах расходов с помощью комплексных диаграмм и отчётов.',
-      benefits: ['Месячные тренды', 'Разбивка по категориям', 'Прогнозы расходов']
-    },
-    {
-      icon: Bell,
-      title: 'Умные напоминания',
-      description: 'Никогда не пропустите продление с настраиваемыми уведомлениями и оповещениями об отмене.',
-      benefits: ['Оповещения о продлении', 'Уведомления об изменении цен', 'Пользовательские напоминания']
+      title: 'Простая аналитика',
+      description: 'Получайте базовую статистику о ваших месячных расходах и подписках.',
+      benefits: ['Месячные и годовые суммы', 'Количество активных подписок', 'Предстоящие платежи']
     },
     {
       icon: Filter,
-      title: 'Мощная фильтрация',
-      description: 'Легко организуйте и находите свои подписки с помощью продвинутых возможностей фильтрации и поиска.',
-      benefits: ['Фильтры по категориям', 'Сортировка по статусу', 'Быстрый поиск']
+      title: 'Организация данных',
+      description: 'Организуйте свои подписки по категориям и легко находите нужные.',
+      benefits: ['Фильтрация по категориям', 'Поиск по названию', 'Сортировка по разным критериям']
     },
     {
-      icon: Calendar,
-      title: 'Календарь платежей',
-      description: 'Визуализируйте все предстоящие платежи в ясном месячном календарном представлении.',
-      benefits: ['Хронология платежей', 'Месячный обзор', 'Даты продления']
+      icon: Smartphone,
+      title: 'Облачное хранение',
+      description: 'Ваши данные безопасно хранятся в облаке Supabase с автоматической синхронизацией.',
+      benefits: ['Облачная синхронизация', 'Доступ с любых устройств', 'Надёжное хранение в PostgreSQL']
     },
     {
       icon: Shield,
-      title: 'Надёжно и приватно',
-      description: 'Ваши данные защищены защитой корпоративного уровня и полным контролем конфиденциальности.',
-      benefits: ['Шифрование банковского уровня', 'Приватность по замыслу', 'Надёжная облачная синхронизация']
+      title: 'Безопасная аутентификация',
+      description: 'Система аутентификации на основе Supabase с Row Level Security для защиты данных.',
+      benefits: ['Надёжная аутентификация', 'Изоляция данных по пользователям', 'Полный контроль доступа']
     }
   ];
 
@@ -56,11 +50,11 @@ const FeaturesSection = () => {
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            Всё необходимое для управления вашими подписками
+            Простые функции для управления подписками
           </h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Комплексные инструменты и аналитика, чтобы помочь вам отслеживать, анализировать и оптимизировать 
-            ваши расходы на подписки с полным контролем и прозрачностью.
+            Основные инструменты для ручного учёта и организации ваших регулярных расходов
+            с полным контролем над данными.
           </p>
         </div>
 
@@ -105,39 +99,29 @@ const FeaturesSection = () => {
           <div className="bg-gray-50 rounded-2xl p-8 lg:p-12">
             <div className="max-w-3xl mx-auto">
               <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
-                Готовы взять контроль?
+                Начните отслеживание сегодня
               </h3>
               <p className="text-lg text-gray-600 mb-8">
-                Присоединяйтесь к тысячам пользователей, которые уже сэкономили деньги и время с нашей 
-                интеллектуальной платформой управления подписками.
+                Простой способ взять под контроль свои подписки без сложных настроек 
+                и подключения к банковским счетам.
               </p>
               
-              {/* Stats */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-gray-900">$2.4М+</div>
-                  <div className="text-sm text-gray-600">Общая экономия</div>
+              {/* Simple Benefits */}
+              <div className="flex items-center justify-center space-x-8 text-sm text-gray-600 mb-8">
+                <div className="flex items-center">
+                  <Smartphone className="h-4 w-4 mr-2" />
+                  <span>Облачное хранение</span>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-gray-900">15,000+</div>
-                  <div className="text-sm text-gray-600">Активных пользователей</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-gray-900">98%</div>
-                  <div className="text-sm text-gray-600">Рейтинг удовлетворённости</div>
-                </div>
-              </div>
-
-              {/* Mobile App Preview */}
-              <div className="flex items-center justify-center space-x-4 text-sm text-gray-600">
-                <Smartphone className="h-4 w-4" />
-                <span>Доступно на всех устройствах</span>
                 <span className="text-gray-400">•</span>
-                <TrendingUp className="h-4 w-4" />
-                <span>Синхронизация в реальном времени</span>
+                <div className="flex items-center">
+                  <Shield className="h-4 w-4 mr-2" />
+                  <span>Безопасная аутентификация</span>
+                </div>
                 <span className="text-gray-400">•</span>
-                <Shield className="h-4 w-4" />
-                <span>Защита банковского уровня</span>
+                <div className="flex items-center">
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  <span>Простая аналитика</span>
+                </div>
               </div>
             </div>
           </div>

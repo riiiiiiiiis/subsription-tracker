@@ -6,6 +6,7 @@ import HeroSection from './landing/HeroSection.jsx';
 import FeaturesSection from './landing/FeaturesSection.jsx';
 import AnalyticsDemo from './landing/AnalyticsDemo.jsx';
 import AboutSection from './landing/AboutSection.jsx';
+import Loading from '@/components/ui/Loading';
 import { Menu, X } from 'lucide-react';
 
 const LandingPage = () => {
@@ -24,7 +25,7 @@ const LandingPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+        <Loading size="lg" text="Загрузка..." />
       </div>
     );
   }
@@ -59,13 +60,13 @@ const LandingPage = () => {
                   onClick={() => scrollToSection('features')}
                   className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
                 >
-                  Возможности
+                  Функции
                 </button>
                 <button
                   onClick={() => scrollToSection('analytics')}
                   className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
                 >
-                  Аналитика
+                  Как это работает
                 </button>
                 <button
                   onClick={() => scrollToSection('about')}
@@ -103,13 +104,13 @@ const LandingPage = () => {
                 onClick={() => scrollToSection('features')}
                 className="text-gray-600 hover:text-gray-900 block px-3 py-2 text-base font-medium w-full text-left"
               >
-                Возможности
+                Функции
               </button>
               <button
                 onClick={() => scrollToSection('analytics')}
                 className="text-gray-600 hover:text-gray-900 block px-3 py-2 text-base font-medium w-full text-left"
               >
-                Аналитика
+                Как это работает
               </button>
               <button
                 onClick={() => scrollToSection('about')}
@@ -138,32 +139,24 @@ const LandingPage = () => {
       {/* Footer */}
       <footer className="bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
               <h3 className="text-lg font-semibold mb-4">Трекер Подписок</h3>
               <p className="text-gray-400">
-                Возьмите под контроль свои подписки с умным отслеживанием и аналитикой.
+                Простое отслеживание ваших подписок с облачным хранением данных.
               </p>
             </div>
             <div>
               <h4 className="text-sm font-semibold mb-4 uppercase tracking-wider">Продукт</h4>
               <ul className="space-y-2">
-                <li><button onClick={() => scrollToSection('features')} className="text-gray-400 hover:text-white text-sm">Возможности</button></li>
-                <li><button onClick={() => scrollToSection('analytics')} className="text-gray-400 hover:text-white text-sm">Аналитика</button></li>
+                <li><button onClick={() => scrollToSection('features')} className="text-gray-400 hover:text-white text-sm">Функции</button></li>
+                <li><button onClick={() => scrollToSection('analytics')} className="text-gray-400 hover:text-white text-sm">Как это работает</button></li>
                 <li><button onClick={handleGetStarted} className="text-gray-400 hover:text-white text-sm">Начать</button></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-sm font-semibold mb-4 uppercase tracking-wider">Поддержка</h4>
-              <ul className="space-y-2">
-                <li><span className="text-gray-400 text-sm">Центр помощи</span></li>
-                <li><span className="text-gray-400 text-sm">Связаться с нами</span></li>
-                <li><span className="text-gray-400 text-sm">Политика конфиденциальности</span></li>
               </ul>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-            © 2024 Трекер Подписок. Все права защищены.
+            © 2025 Трекер Подписок. Все права защищены.
           </div>
         </div>
       </footer>

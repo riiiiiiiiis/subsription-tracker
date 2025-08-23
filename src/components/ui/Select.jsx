@@ -15,12 +15,12 @@ const Select = ({
 }) => {
   const selectClasses = [
     'w-full px-3 py-2 border rounded-lg transition-colors duration-200 appearance-none',
-    'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+    'focus-ring',
     'bg-white',
     error 
-      ? 'border-red-300 bg-red-50' 
+      ? 'error-state' 
       : 'border-gray-300 hover:border-gray-400',
-    disabled ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'cursor-pointer',
+    disabled ? 'disabled-state bg-gray-50' : 'cursor-pointer',
     className
   ].filter(Boolean).join(' ');
 
@@ -58,7 +58,7 @@ const Select = ({
         <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
       </div>
       {error && (
-        <p className="text-sm text-red-600">{error}</p>
+        <p className="text-sm error-text">{error}</p>
       )}
     </div>
   );

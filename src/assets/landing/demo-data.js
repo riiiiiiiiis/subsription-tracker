@@ -63,7 +63,7 @@ export const demoSubscriptions = [
     category: 'Communication',
     cost: 6.67,
     billingCycle: 'monthly',
-    nextBilling: '2024-02-25',
+    nextBiling: '2024-02-25',
     status: 'active',
     color: '#4A154B',
     icon: 'S'
@@ -144,52 +144,22 @@ export const demoCategoryTotals = [
 
 export const demoMonthlyData = [
   {
-    month: 'August',
-    year: 2023,
-    total: 142.50,
-    subscriptions: 8,
-    newSubscriptions: 1,
-    cancelledSubscriptions: 0
-  },
-  {
-    month: 'September',
-    year: 2023,
-    total: 156.47,
-    subscriptions: 9,
-    newSubscriptions: 1,
-    cancelledSubscriptions: 0
-  },
-  {
-    month: 'October',
-    year: 2023,
-    total: 134.99,
-    subscriptions: 8,
-    newSubscriptions: 0,
-    cancelledSubscriptions: 1
-  },
-  {
     month: 'November',
     year: 2023,
-    total: 167.96,
-    subscriptions: 10,
-    newSubscriptions: 2,
-    cancelledSubscriptions: 0
+    total: 98.47,
+    subscriptions: 8
   },
   {
     month: 'December',
     year: 2023,
-    total: 149.47,
-    subscriptions: 9,
-    newSubscriptions: 0,
-    cancelledSubscriptions: 1
+    total: 101.61,
+    subscriptions: 9
   },
   {
     month: 'January',
     year: 2024,
-    total: 158.96,
-    subscriptions: 9,
-    newSubscriptions: 1,
-    cancelledSubscriptions: 1
+    total: 96.62,
+    subscriptions: 8
   }
 ];
 
@@ -233,28 +203,18 @@ export const demoUpcomingPayments = [
 ];
 
 export const demoAnalytics = {
-  totalMonthlySpending: 156.47,
+  totalMonthlySpending: 101.61,
   totalActiveSubscriptions: 9,
-  averagePerSubscription: 17.38,
-  potentialSavings: 24.50,
-  monthlyGrowth: 12.3,
-  yearOverYearGrowth: 8.7,
-  mostExpensiveCategory: 'Entertainment',
-  leastUsedSubscriptions: ['Old Streaming Service', 'Unused App'],
+  averagePerSubscription: 11.29,
   upcomingRenewals: 4,
-  weeklySpending: 51.96
+  weeklySpending: 25.40,
+  mostExpensiveCategory: 'Entertainment'
 };
 
 export const demoTrendData = {
-  spendingTrend: 'increasing',
-  trendPercentage: 10.2,
-  projectedNextMonth: 170.00,
-  seasonalPattern: 'Higher spending during winter months',
-  recommendations: [
-    'Consider cancelling unused subscriptions',
-    'Look for annual billing discounts',
-    'Review entertainment category spending'
-  ]
+  currentMonth: 'February 2024',
+  basicInsight: 'Track your spending patterns over time',
+  simpleRecommendation: 'Review your subscriptions monthly to stay organized'
 };
 
 // Helper functions for demo data

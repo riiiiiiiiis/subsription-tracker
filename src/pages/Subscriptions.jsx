@@ -13,7 +13,7 @@ import useUnifiedStore from '@/store/unified-store';
 import { Button, Input, Select, Card } from '@/components/ui';
 import SubscriptionCard from '../components/SubscriptionCard.jsx';
 import AddSubscriptionModal from '../components/AddSubscriptionModal.jsx';
-import { getCategoryLabel } from '@/types';
+import { getCategoryLabel, getCategoryOptionsWithAll, getStatusOptions, getSortOptions } from '@/types';
 
 const Subscriptions = () => {
   // Optimized unified store selectors with shallow comparison
@@ -53,29 +53,10 @@ const Subscriptions = () => {
     }
   }, [subscriptions, filteredSubscriptions, applyFilters, filters, setFilters]);
 
-  // Filter options
-  const categoryOptions = [
-    { value: 'all', label: 'Все категории' },
-    { value: 'entertainment', label: getCategoryLabel('entertainment') },
-    { value: 'utilities', label: getCategoryLabel('utilities') },
-    { value: 'software', label: getCategoryLabel('software') },
-    { value: 'food', label: getCategoryLabel('food') },
-    { value: 'health', label: getCategoryLabel('health') },
-    { value: 'other', label: getCategoryLabel('other') },
-  ];
-
-  const statusOptions = [
-    { value: 'all', label: 'Любой статус' },
-    { value: 'active', label: 'Активна' },
-    { value: 'inactive', label: 'Неактивна' },
-  ];
-
-  const sortOptions = [
-    { value: 'name', label: 'Название' },
-    { value: 'amount', label: 'Сумма' },
-    { value: 'nextPayment', label: 'Следующий платеж' },
-    { value: 'createdAt', label: 'Дата добавления' },
-  ];
+  // Filter options from centralized configuration
+  const categoryOptions = getCategoryOptionsWithAll();
+  const statusOptions = getStatusOptions();
+  const sortOptions = getSortOptions();
 
   // Filter subscriptions by search term
   const searchFilteredSubscriptions = filteredSubscriptions.filter(sub =>

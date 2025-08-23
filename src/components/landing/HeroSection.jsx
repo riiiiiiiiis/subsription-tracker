@@ -10,27 +10,27 @@ const HeroSection = ({ onGetStarted }) => {
           {/* Content */}
           <div className="text-center lg:text-left">
             <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 leading-tight">
-              Возьмите под контроль свои
-              <span className="text-gray-600 block">Подписки</span>
+              Простое отслеживание
+              <span className="text-gray-600 block">Подписок</span>
             </h1>
             <p className="mt-6 text-lg text-gray-600 leading-relaxed">
-              Отслеживайте, анализируйте и оптимизируйте свои расходы на подписки с помощью умных 
-              аналитических инструментов и автоматических напоминаний. Никогда больше не удивляйтесь скрытым платежам.
+              Вручную добавляйте и отслеживайте свои регулярные расходы в одном месте. 
+              Простой инструмент для личного учёта подписок без сложных настроек.
             </p>
             
             {/* Key Benefits */}
             <div className="mt-8 space-y-3">
               <div className="flex items-center justify-center lg:justify-start">
                 <CreditCard className="h-5 w-5 text-gray-600 mr-3" />
-                <span className="text-gray-700">Отслеживайте все подписки в одном месте</span>
+                <span className="text-gray-700">Ручное добавление и учёт подписок</span>
               </div>
               <div className="flex items-center justify-center lg:justify-start">
                 <BarChart3 className="h-5 w-5 text-gray-600 mr-3" />
-                <span className="text-gray-700">Получайте детальную аналитику расходов</span>
+                <span className="text-gray-700">Простая аналитика месячных расходов</span>
               </div>
               <div className="flex items-center justify-center lg:justify-start">
                 <Smartphone className="h-5 w-5 text-gray-600 mr-3" />
-                <span className="text-gray-700">Настраивайте умные напоминания о продлении</span>
+                <span className="text-gray-700">Облачная синхронизация через Supabase</span>
               </div>
             </div>
 
@@ -54,16 +54,13 @@ const HeroSection = ({ onGetStarted }) => {
               </Button>
             </div>
 
-            {/* Trust Signals */}
+            {/* Simple Feature Highlight */}
             <div className="mt-8 text-center lg:text-left">
-              <p className="text-sm text-gray-500 mb-2">Нам доверяют тысячи пользователей</p>
-              <div className="flex items-center justify-center lg:justify-start space-x-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <svg key={star} className="h-4 w-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
-                  </svg>
-                ))}
-                <span className="ml-2 text-sm text-gray-600">4.9/5 от 2000+ отзывов</span>
+              <p className="text-sm text-gray-500 mb-2">Начните отслеживание с регистрации</p>
+              <div className="flex items-center justify-center lg:justify-start space-x-4 text-sm text-gray-600">
+                <span>✓ Быстрая регистрация</span>
+                <span>✓ Облачное хранение</span>
+                <span>✓ Простой интерфейс</span>
               </div>
             </div>
           </div>
@@ -137,18 +134,18 @@ const HeroSection = ({ onGetStarted }) => {
               </div>
             </div>
             
-            {/* Floating Cards */}
+            {/* Simple Info Cards */}
             <div className="absolute -top-4 -right-4 bg-white rounded-lg shadow-lg p-3 hidden lg:block">
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-xs text-gray-600">Отслеживание в реальном времени</span>
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span className="text-xs text-gray-600">Простое добавление</span>
               </div>
             </div>
             
             <div className="absolute -bottom-4 -left-4 bg-white rounded-lg shadow-lg p-3 hidden lg:block">
               <div className="text-center">
-                <div className="text-lg font-bold text-green-600">$24.50</div>
-                <div className="text-xs text-gray-600">Экономия за месяц</div>
+                <div className="text-lg font-bold text-blue-600">$156</div>
+                <div className="text-xs text-gray-600">Всего за месяц</div>
               </div>
             </div>
           </div>

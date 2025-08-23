@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase.js';
-import { Button, Input } from './ui';
+import { Button, Input, Loading } from './ui';
 
 const AuthForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -86,7 +86,7 @@ const AuthForm = () => {
           )}
 
           {error && (
-            <div className="p-3 rounded-lg bg-red-50 border border-red-200">
+            <div className="p-3 rounded-lg error-bg border">
               <p className="text-sm text-red-800">{error}</p>
             </div>
           )}
@@ -97,7 +97,7 @@ const AuthForm = () => {
             className="w-full"
           >
             {isLoading ? (
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+              <Loading size="sm" text="" />
             ) : (
               isSignUp ? 'Создать аккаунт' : 'Войти'
             )}

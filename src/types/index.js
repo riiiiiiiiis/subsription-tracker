@@ -51,6 +51,46 @@ export const getBillingCycleLabel = (cycle) => {
   return labels[cycle];
 };
 
+// Centralized filter options for UI components
+export const getCategoryOptions = () => [
+  { value: 'entertainment', label: getCategoryLabel('entertainment') },
+  { value: 'utilities', label: getCategoryLabel('utilities') },
+  { value: 'software', label: getCategoryLabel('software') },
+  { value: 'food', label: getCategoryLabel('food') },
+  { value: 'health', label: getCategoryLabel('health') },
+  { value: 'other', label: getCategoryLabel('other') },
+];
+
+export const getCategoryOptionsWithAll = () => [
+  { value: 'all', label: 'Все категории' },
+  ...getCategoryOptions(),
+];
+
+export const getBillingCycleOptions = () => [
+  { value: 'weekly', label: getBillingCycleLabel('weekly') },
+  { value: 'monthly', label: getBillingCycleLabel('monthly') },
+  { value: 'yearly', label: getBillingCycleLabel('yearly') },
+];
+
+export const getCurrencyOptions = () => [
+  { value: 'USD', label: 'USD ($)' },
+  { value: 'EUR', label: 'EUR (€)' },
+  { value: 'RUB', label: 'RUB (₽)' },
+];
+
+export const getStatusOptions = () => [
+  { value: 'all', label: 'Любой статус' },
+  { value: 'active', label: 'Активная' },
+  { value: 'inactive', label: 'Неактивная' },
+];
+
+export const getSortOptions = () => [
+  { value: 'name', label: 'Название' },
+  { value: 'amount', label: 'Сумма' },
+  { value: 'nextPayment', label: 'Следующий платеж' },
+  { value: 'createdAt', label: 'Дата добавления' },
+];
+
 export const calculateMonthlyAmount = (amount, cycle) => {
   switch (cycle) {
     case 'weekly':

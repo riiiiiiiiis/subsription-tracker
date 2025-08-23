@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useUnifiedAuth } from '../components/auth/UnifiedAuthProvider.jsx';
 import AuthForm from '../components/AuthForm.jsx';
+import Loading from '@/components/ui/Loading';
 
 const AuthPage = () => {
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const AuthPage = () => {
   if (loading || user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+        <Loading size="md" text="" />
       </div>
     );
   }

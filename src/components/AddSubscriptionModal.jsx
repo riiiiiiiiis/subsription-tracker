@@ -5,7 +5,7 @@ import Button from '@/components/ui/Button.jsx';
 import Input from '@/components/ui/Input.jsx';
 import Select from '@/components/ui/Select.jsx';
 import useUnifiedStore from '@/store/unified-store';
-import { getCategoryLabel } from '@/types';
+import { getCategoryLabel, getCategoryOptions, getBillingCycleOptions, getCurrencyOptions } from '@/types';
 
 const AddSubscriptionModal = ({ 
   isOpen, 
@@ -31,31 +31,10 @@ const AddSubscriptionModal = ({
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Category options
-  const categoryOptions = [
-    { value: 'entertainment', label: getCategoryLabel('entertainment') },
-    { value: 'utilities', label: getCategoryLabel('utilities') },
-    { value: 'software', label: getCategoryLabel('software') },
-    { value: 'food', label: getCategoryLabel('food') },
-    { value: 'health', label: getCategoryLabel('health') },
-    { value: 'other', label: getCategoryLabel('other') },
-  ];
-
-  // Billing cycle options
-  const billingCycleOptions = [
-    { value: 'weekly', label: 'Еженедельно' },
-    { value: 'monthly', label: 'Ежемесячно' },
-    { value: 'yearly', label: 'Ежегодно' },
-  ];
-
-  // Currency options
-  const currencyOptions = [
-    { value: 'USD', label: 'USD ($)' },
-    { value: 'EUR', label: 'EUR (€)' },
-    { value: 'GBP', label: 'GBP (£)' },
-    { value: 'CAD', label: 'CAD ($)' },
-    { value: 'AUD', label: 'AUD ($)' },
-  ];
+  // Options from centralized configuration
+  const categoryOptions = getCategoryOptions();
+  const billingCycleOptions = getBillingCycleOptions();
+  const currencyOptions = getCurrencyOptions();
 
   // Load edit data
   useEffect(() => {

@@ -1,13 +1,1 @@
 /* App-specific styles */
-.App {
-  text-align: center;
-}
-
-/* Custom styles for the subscription tracker */
-.subscription-card {
-  transition: transform 0.2s ease-in-out;
-}
-
-.subscription-card:hover {
-  transform: translateY(-2px);
-}

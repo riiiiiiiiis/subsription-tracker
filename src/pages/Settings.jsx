@@ -111,7 +111,7 @@ const Settings = () => {
                 variant="outline"
                 onClick={handleSignOut}
                 disabled={loading}
-                className="flex items-center space-x-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-300"
+                className="flex items-center space-x-2 danger-hover border-red-300"
               >
                 <LogOut className="h-4 w-4" />
                 <span>{loading ? 'Выход...' : 'Выйти из системы'}</span>
@@ -148,7 +148,7 @@ const Settings = () => {
               </Button>
             </div>
 
-            <div className="flex items-center justify-between p-4 bg-red-50 rounded-lg border border-red-200">
+            <div className="flex items-center justify-between p-4 error-bg rounded-lg border">
               <div>
                 <h3 className="font-medium text-red-900">Удалить все данные</h3>
                 <p className="text-sm text-red-700">
