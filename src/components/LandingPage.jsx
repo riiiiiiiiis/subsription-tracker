@@ -7,7 +7,7 @@ import FeaturesSection from './landing/FeaturesSection.jsx';
 import AnalyticsDemo from './landing/AnalyticsDemo.jsx';
 import AboutSection from './landing/AboutSection.jsx';
 import Loading from '@/components/ui/Loading';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Github } from 'lucide-react';
 
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -155,6 +155,20 @@ const LandingPage = () => {
               </ul>
             </div>
           </div>
+          
+          {/* GitHub Link */}
+          <div className="border-t border-gray-800 mt-8 pt-8 text-center">
+            <a 
+              href="https://github.com/riiiiiiiiis/subsription-tracker" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center space-x-2 bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 font-medium"
+            >
+              <Github size={20} />
+              <span>Весь код на GitHub</span>
+            </a>
+          </div>
+          
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
             © 2025 Трекер Подписок. Все права защищены.
           </div>

@@ -40,10 +40,8 @@ const HeroSection = ({ onGetStarted }) => {
                 onClick={onGetStarted} 
                 variant="primary" 
                 size="lg"
-                className="group"
               >
                 Начать бесплатно
-                <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button 
                 variant="outline" 

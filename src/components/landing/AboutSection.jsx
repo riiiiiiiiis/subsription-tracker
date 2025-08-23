@@ -148,22 +148,18 @@ const AboutSection = ({ onGetStarted }) => {
 
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button 
+              <button 
                 onClick={onGetStarted} 
-                variant="primary" 
-                size="lg"
-                className="bg-white text-gray-900 hover:bg-gray-100"
+                className="px-6 py-3 text-base font-semibold bg-white text-gray-900 hover:bg-gray-100 border-2 border-gray-200 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
               >
                 Начать бесплатно
-              </Button>
-              <Button 
-                variant="outline" 
-                size="lg"
-                className="border-white text-white hover:bg-white hover:text-gray-900"
+              </button>
+              <button 
+                className="px-6 py-3 text-base font-semibold bg-transparent text-white hover:bg-white hover:text-gray-900 border-2 border-white rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
                 onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })}
               >
                 Узнать больше
-              </Button>
+              </button>
             </div>
 
             {/* Security Note */}
