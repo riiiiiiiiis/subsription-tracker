@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   DollarSign, 
   TrendingUp, 
   Calendar, 
   CreditCard,
   Plus,
-  Clock
+  Clock,
+  Settings
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useShallow } from 'zustand/react/shallow';
@@ -17,6 +18,7 @@ import AddSubscriptionModal from '@/components/AddSubscriptionModal.jsx';
 import { formatCurrency, getCategoryColor, getCategoryLabel, getBillingCycleLabel } from '@/types';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   // State for subscription management
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingSubscription, setEditingSubscription] = useState(null);
@@ -110,10 +112,21 @@ const Dashboard = () => {
             Отслеживайте свои подписки и расходы
           </p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)} className="flex items-center space-x-2">
-          <Plus className="h-4 w-4" />
-          <span>Добавить подписку</span>
-        </Button>
+        <div className="flex items-center space-x-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate('/app/settings')}
+            className="flex items-center"
+            title="Настройки"
+          >
+            <Settings className="h-5 w-5" />
+          </Button>
+          <Button onClick={() => setIsModalOpen(true)} className="flex items-center space-x-2">
+            <Plus className="h-4 w-4" />
+            <span>Добавить подписку</span>
+          </Button>
+        </div>
       </div>
 
       {/* Upcoming Payments */}

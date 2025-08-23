@@ -52,7 +52,6 @@ const useUnifiedStore = create(
         // UI state
         ui: {
           selectedSubscription: null,
-          sidebarOpen: false,
         },
         
         // Notifications state
@@ -248,8 +247,7 @@ const useUnifiedStore = create(
               maxReconnectAttempts: 5
             },
             ui: {
-              selectedSubscription: null,
-              sidebarOpen: false
+              selectedSubscription: null
             },
             notifications: {
               toasts: []
@@ -886,18 +884,6 @@ const useUnifiedStore = create(
         setSelectedSubscription: (subscription) => {
           set(state => ({
             ui: { ...state.ui, selectedSubscription: subscription }
-          }));
-        },
-
-        setSidebarOpen: (isOpen) => {
-          set(state => ({
-            ui: { ...state.ui, sidebarOpen: isOpen }
-          }));
-        },
-
-        toggleSidebar: () => {
-          set(state => ({
-            ui: { ...state.ui, sidebarOpen: !state.ui.sidebarOpen }
           }));
         },
 

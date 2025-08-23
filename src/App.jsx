@@ -11,7 +11,6 @@ import './App.css';
 
 // Lazy load pages for better performance
 const Dashboard = lazy(() => import('./pages/Dashboard.jsx'));
-const AnalyticsPage = lazy(() => import('./pages/Analytics.jsx'));
 const Settings = lazy(() => import('./pages/Settings.jsx'));
 const AuthPage = lazy(() => import('./pages/AuthPage.jsx'));
 const LandingPage = lazy(() => import('./components/LandingPage.jsx'));
@@ -44,7 +43,6 @@ function App() {
                         <Route path="dashboard" element={<Dashboard />} />
                         {/* Redirect subscriptions to dashboard for backward compatibility */}
                         <Route path="subscriptions" element={<Navigate to="dashboard" replace />} />
-                        <Route path="analytics" element={<AnalyticsPage />} />
                         <Route path="settings" element={<Settings />} />
                         {/* Default redirect to dashboard */}
                         <Route path="" element={<Navigate to="dashboard" replace />} />
