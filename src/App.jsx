@@ -15,6 +15,7 @@ const Subscriptions = lazy(() => import('./pages/Subscriptions.jsx'));
 const AnalyticsPage = lazy(() => import('./pages/Analytics.jsx'));
 const Settings = lazy(() => import('./pages/Settings.jsx'));
 const AuthPage = lazy(() => import('./pages/AuthPage.jsx'));
+const LandingPage = lazy(() => import('./components/LandingPage.jsx'));
 
 function App() {
   // Initialize the unified store with Supabase integration
@@ -29,28 +30,34 @@ function App() {
             v7_relativeSplatPath: true
           }}
         >
-          <Suspense fallback={<Loading text="Загрузка страницы..." />}>
+          <Suspense fallback={<Loading text="Loading page..." />}>
             <Routes>
-              {/* Public route for authentication */}
+              {/* Public routes */}
+              <Route path="/" element={<LandingPage />} />
               <Route path="/auth" element={<AuthPage />} />
               
-              {/* Protected routes */}
-              <Route path="/*" element={
+              {/* Protected app routes */}
+              <Route path="/app/*" element={
                 <ProtectedRoute>
                   <Layout>
-                    <Suspense fallback={<Loading text="Загрузка контента..." />}>
+                    <Suspense fallback={<Loading text="Loading content..." />}>
                       <Routes>
-                        <Route path="/" element={<Dashboard />} />
-                        <Route path="/subscriptions" element={<Subscriptions />} />
-                        <Route path="/analytics" element={<AnalyticsPage />} />
-                        <Route path="/settings" element={<Settings />} />
+                        <Route path="dashboard" element={<Dashboard />} />
+                        <Route path="subscriptions" element={<Subscriptions />} />
+                        <Route path="analytics" element={<AnalyticsPage />} />
+                        <Route path="settings" element={<Settings />} />
+                        {/* Default redirect to dashboard */}
+                        <Route path="" element={<Navigate to="dashboard" replace />} />
                         {/* Catch-all route for 404 handling */}
-                        <Route path="*" element={<Navigate to="/" replace />} />
+                        <Route path="*" element={<Navigate to="dashboard" replace />} />
                       </Routes>
                     </Suspense>
                   </Layout>
                 </ProtectedRoute>
               } />
+              
+              {/* Catch-all redirect to landing page */}
+              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </Suspense>
         </Router>

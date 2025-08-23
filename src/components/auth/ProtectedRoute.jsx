@@ -24,7 +24,7 @@ const ProtectedRoute = ({ children }) => {
     return (
       <Navigate 
         to="/auth" 
-        state={{ from: location }} 
+        state={{ from: location.pathname }} 
         replace 
       />
     );

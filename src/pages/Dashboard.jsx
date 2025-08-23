@@ -76,7 +76,7 @@ const Dashboard = () => {
             Отслеживайте свои подписки и расходы
           </p>
         </div>
-        <Link to="/subscriptions">
+        <Link to="/app/subscriptions">
           <Button className="flex items-center space-x-2">
             <Plus className="h-4 w-4" />
             <span>Добавить подписку</span>
@@ -118,7 +118,7 @@ const Dashboard = () => {
                 <span>Ближайшие платежи</span>
               </Card.Title>
               <Link 
-                to="/subscriptions" 
+                to="/app/subscriptions" 
                 className="text-sm text-primary-600 hover:text-primary-700"
               >
                 Смотреть все
@@ -170,7 +170,7 @@ const Dashboard = () => {
                 <span>Недавние подписки</span>
               </Card.Title>
               <Link 
-                to="/subscriptions" 
+                to="/app/subscriptions" 
                 className="text-sm text-primary-600 hover:text-primary-700"
               >
                 Управлять всеми
@@ -211,7 +211,7 @@ const Dashboard = () => {
               <div className="text-center py-8 text-gray-500">
                 <CreditCard className="h-12 w-12 mx-auto mb-3 text-gray-300" />
                 <p className="mb-3">Подписок пока нет</p>
-                <Link to="/subscriptions">
+                <Link to="/app/subscriptions">
                   <Button size="sm">Добавить первую подписку</Button>
                 </Link>
               </div>
@@ -234,7 +234,7 @@ const Dashboard = () => {
                 Рассмотрите возможность пересмотреть подписки для оптимизации расходов.
               </p>
               <div className="mt-3">
-                <Link to="/analytics">
+                <Link to="/app/analytics">
                   <Button variant="outline" size="sm" className="bg-white border-amber-300 text-amber-700 hover:bg-amber-100">
                     Смотреть аналитику
                   </Button>

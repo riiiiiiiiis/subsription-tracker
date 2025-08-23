@@ -13,15 +13,15 @@ const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
 
   const navigation = [
-    { name: 'Главная', href: '/', icon: LayoutDashboard },
-    { name: 'Подписки', href: '/subscriptions', icon: CreditCard },
-    { name: 'Аналитика', href: '/analytics', icon: BarChart3 },
-    { name: 'Настройки', href: '/settings', icon: Settings },
+    { name: 'Главная', href: '/app/dashboard', icon: LayoutDashboard },
+    { name: 'Подписки', href: '/app/subscriptions', icon: CreditCard },
+    { name: 'Аналитика', href: '/app/analytics', icon: BarChart3 },
+    { name: 'Настройки', href: '/app/settings', icon: Settings },
   ];
 
   const isActive = (path) => {
-    if (path === '/') {
-      return location.pathname === '/';
+    if (path === '/app/dashboard') {
+      return location.pathname === '/app/dashboard' || location.pathname === '/app' || location.pathname === '/app/';
     }
     return location.pathname.startsWith(path);
   };

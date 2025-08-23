@@ -1,18 +1,22 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useUnifiedAuth } from '../components/auth/UnifiedAuthProvider.jsx';
 import AuthForm from '../components/AuthForm.jsx';
 
 const AuthPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, loading } = useUnifiedAuth();
+
+  // Get the intended destination from state, default to dashboard
+  const from = location.state?.from || '/app/dashboard';
 
   // Redirect if user is already authenticated
   useEffect(() => {
     if (user && !loading) {
-      navigate('/', { replace: true });
+      navigate(from, { replace: true });
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, navigate, from]);
 
   // Don't render anything while loading or if user is authenticated
   if (loading || user) {

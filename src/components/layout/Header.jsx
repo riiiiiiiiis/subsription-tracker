@@ -17,7 +17,7 @@ import useUnifiedStore from '@/store/unified-store.js';
 
 const Header = () => {
   const location = useLocation();
-  const { signOut, loading } = useUnifiedAuth();
+  const { signOut, loading, isAuthenticated } = useUnifiedAuth();
   
   // Get auth, sidebar state from unified store
   const { auth, sidebarOpen, toggleSidebar } = useUnifiedStore(
@@ -81,15 +81,15 @@ const Header = () => {
   }, []);
 
   const navigation = [
-    { name: 'Главная', href: '/', icon: LayoutDashboard },
-    { name: 'Подписки', href: '/subscriptions', icon: CreditCard },
-    { name: 'Аналитика', href: '/analytics', icon: BarChart3 },
-    { name: 'Настройки', href: '/settings', icon: Settings },
+    { name: 'Главная', href: '/app/dashboard', icon: LayoutDashboard },
+    { name: 'Подписки', href: '/app/subscriptions', icon: CreditCard },
+    { name: 'Аналитика', href: '/app/analytics', icon: BarChart3 },
+    { name: 'Настройки', href: '/app/settings', icon: Settings },
   ];
 
   const isActive = (path) => {
-    if (path === '/') {
-      return location.pathname === '/';
+    if (path === '/app/dashboard') {
+      return location.pathname === '/app/dashboard' || location.pathname === '/app' || location.pathname === '/app/';
     }
     return location.pathname.startsWith(path);
   };
@@ -113,7 +113,7 @@ const Header = () => {
           </Button>
 
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to={isAuthenticated ? "/app/dashboard" : "/"} className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
               <CreditCard className="h-4 w-4 text-white" />
             </div>
