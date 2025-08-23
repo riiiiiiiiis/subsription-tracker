@@ -2,6 +2,43 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## MCP Server Usage
+
+### Playwright MCP (`mcp__playwright`)
+Use for browser automation, testing, and web scraping tasks:
+- **Testing UI flows**: Use `browser_navigate`, `browser_click`, `browser_type` for automated testing
+- **Screenshots**: Use `browser_take_screenshot` for visual regression testing or documentation
+- **Form testing**: Use `browser_type`, `browser_select_option` for form interactions
+- **Debugging**: Use `browser_console_messages`, `browser_network_requests` to debug issues
+- Always start with `browser_navigate` to load the page
+- Use `browser_snapshot` instead of screenshots for accessibility testing
+- Close tabs/browser with `browser_close` when done
+
+### Sequential Thinking MCP (`mcp__sequential-thinking`)
+Use for complex problem-solving and planning:
+- **Architecture decisions**: Break down system design into logical steps
+- **Debugging complex issues**: Systematically analyze problems
+- **Refactoring planning**: Plan large-scale code changes step-by-step
+- **Algorithm implementation**: Think through complex logic before coding
+- Always complete the thinking process before implementing
+- Use for problems requiring multiple steps or careful analysis
+- Helps maintain context over long problem-solving sessions
+
+### Context7 MCP (`mcp__context7`)
+Use for library documentation and API references:
+- **Always use for library questions**: When implementing features with external libraries
+- **Two-step process**: 
+  1. First call `resolve-library-id` to get the library ID (e.g., for "React Router" → "/remix-run/react-router")
+  2. Then call `get-library-docs` with the resolved ID
+- **Common libraries in this project**:
+  - Supabase: Database, auth, real-time features
+  - React Router: Routing and navigation
+  - Zustand: State management
+  - Recharts: Chart components
+  - date-fns: Date manipulation
+- **Focus documentation**: Use the `topic` parameter to get specific docs (e.g., "hooks", "authentication")
+- **Token management**: Default 10000 tokens is usually sufficient
+
 ## Commands
 
 ### Development

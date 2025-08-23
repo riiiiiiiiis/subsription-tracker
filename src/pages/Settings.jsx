@@ -1,10 +1,52 @@
 import React from 'react';
-import { Settings as SettingsIcon, Download, Trash2, Info } from 'lucide-react';
+import { Settings as SettingsIcon, Download, Trash2, User, LogOut } from 'lucide-react';
+import { useShallow } from 'zustand/react/shallow';
 import useUnifiedStore from '@/store/unified-store';
 import { Card, Button } from '@/components/ui';
+import { useUnifiedAuth } from '@/components/auth/UnifiedAuthProvider';
 
 const Settings = () => {
-  const subscriptions = useUnifiedStore(state => state.data.subscriptions);
+  const { signOut, loading } = useUnifiedAuth();
+  
+  const { auth, subscriptions } = useUnifiedStore(
+    useShallow((state) => ({
+      auth: state.auth,
+      subscriptions: state.data.subscriptions
+    }))
+  );
+  
+  // Compute display name
+  const getDisplayName = () => {
+    const { profile, user } = auth;
+    
+    if (profile?.full_name?.trim()) {
+      return profile.full_name.trim();
+    }
+    
+    if (profile?.display_name?.trim()) {
+      return profile.display_name.trim();
+    }
+    
+    if (user?.user_metadata?.full_name?.trim()) {
+      return user.user_metadata.full_name.trim();
+    }
+    
+    if (user?.email) {
+      return user.email.split('@')[0];
+    }
+    
+    return 'Пользователь';
+  };
+  
+  const displayName = getDisplayName();
+  
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   const handleExportData = () => {
     const dataToExport = {
@@ -43,6 +85,41 @@ const Settings = () => {
           Управляйте настройками приложения и данными
         </p>
       </div>
+
+      {/* User Profile */}
+      <Card className="p-6">
+        <Card.Header>
+          <Card.Title className="flex items-center space-x-2">
+            <User className="h-5 w-5" />
+            <span>Профиль</span>
+          </Card.Title>
+        </Card.Header>
+        <Card.Content>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-lg font-medium text-gray-900">{displayName}</p>
+                <p className="text-sm text-gray-600">{auth.user?.email}</p>
+              </div>
+              <div className="flex items-center space-x-2 text-gray-500">
+                <User className="h-8 w-8" />
+              </div>
+            </div>
+            
+            <div className="pt-4 border-t border-gray-200">
+              <Button
+                variant="outline"
+                onClick={handleSignOut}
+                disabled={loading}
+                className="flex items-center space-x-2 text-red-600 hover:text-red-700 hover:bg-red-50 border-red-300"
+              >
+                <LogOut className="h-4 w-4" />
+                <span>{loading ? 'Выход...' : 'Выйти из системы'}</span>
+              </Button>
+            </div>
+          </div>
+        </Card.Content>
+      </Card>
 
       {/* Data Management */}
       <Card className="p-6">
@@ -86,38 +163,6 @@ const Settings = () => {
                 <Trash2 className="h-4 w-4" />
                 <span>Удалить данные</span>
               </Button>
-            </div>
-          </div>
-        </Card.Content>
-      </Card>
-
-      {/* Application Info */}
-      <Card className="p-6">
-        <Card.Header>
-          <Card.Title className="flex items-center space-x-2">
-            <Info className="h-5 w-5" />
-            <span>Информация о приложении</span>
-          </Card.Title>
-        </Card.Header>
-        <Card.Content>
-          <div className="space-y-3">
-            <div className="flex justify-between">
-              <span className="text-gray-600">Версия:</span>
-              <span className="font-medium">1.0.0</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Всего подписок:</span>
-              <span className="font-medium">{subscriptions.length}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Активных подписок:</span>
-              <span className="font-medium">
-                {subscriptions.filter(sub => sub.isActive).length}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-600">Хранилище данных:</span>
-              <span className="font-medium">Локальное хранилище браузера</span>
             </div>
           </div>
         </Card.Content>

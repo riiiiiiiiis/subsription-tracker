@@ -1,88 +1,29 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  LayoutDashboard, 
   CreditCard, 
   BarChart3, 
   Settings,
   Menu,
-  X,
-  User,
-  LogOut
+  X
 } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
 import { Button } from '@/components/ui';
-import { useUnifiedAuth } from '../auth/UnifiedAuthProvider.jsx';
 import useUnifiedStore from '@/store/unified-store.js';
 
 const Header = () => {
   const location = useLocation();
-  const { signOut, loading, isAuthenticated } = useUnifiedAuth();
   
-  // Get auth, sidebar state from unified store
-  const { auth, sidebarOpen, toggleSidebar } = useUnifiedStore(
+  // Get sidebar state from unified store
+  const { sidebarOpen, toggleSidebar } = useUnifiedStore(
     useShallow((state) => ({
-      auth: state.auth,
       sidebarOpen: state.ui.sidebarOpen,
       toggleSidebar: state.toggleSidebar,
     }))
   );
-  
-  // Compute display name locally to avoid function call in selector
-  const getDisplayName = () => {
-    const { profile, user } = auth;
-    
-    // Priority order for display name
-    if (profile?.full_name?.trim()) {
-      return profile.full_name.trim();
-    }
-    
-    if (profile?.display_name?.trim()) {
-      return profile.display_name.trim();
-    }
-    
-    if (user?.user_metadata?.full_name?.trim()) {
-      return user.user_metadata.full_name.trim();
-    }
-    
-    if (user?.email) {
-      return user.email.split('@')[0];
-    }
-    
-    return 'Пользователь';
-  };
-  
-  const displayName = getDisplayName();
-  
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  const userMenuRef = useRef(null);
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      setShowUserMenu(false);
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
-  };
-
-  // Close user menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
-        setShowUserMenu(false);
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
 
   const navigation = [
-    { name: 'Главная', href: '/app/dashboard', icon: LayoutDashboard },
-    { name: 'Подписки', href: '/app/subscriptions', icon: CreditCard },
+    { name: 'Подписки', href: '/app/dashboard', icon: CreditCard },
     { name: 'Аналитика', href: '/app/analytics', icon: BarChart3 },
     { name: 'Настройки', href: '/app/settings', icon: Settings },
   ];
@@ -113,7 +54,7 @@ const Header = () => {
           </Button>
 
           {/* Logo */}
-          <Link to={isAuthenticated ? "/app/dashboard" : "/"} className="flex items-center space-x-2">
+          <Link to="/app/dashboard" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
               <CreditCard className="h-4 w-4 text-white" />
             </div>
@@ -143,53 +84,6 @@ const Header = () => {
             );
           })}
         </nav>
-
-        {/* User menu */}
-        <div className="flex items-center space-x-4">
-          <Button variant="outline" size="sm">
-            Экспорт данных
-          </Button>
-          
-          {/* User dropdown */}
-          <div className="relative" ref={userMenuRef}>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center space-x-2"
-            >
-              <User className="h-4 w-4" />
-              <span className="hidden sm:block">
-                {displayName}
-              </span>
-            </Button>
-
-            {/* Dropdown menu */}
-            {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50">
-                <div className="py-2">
-                  <div className="px-4 py-2 border-b border-gray-100">
-                    <p className="text-sm font-medium text-gray-900">
-                      {displayName}
-                    </p>
-                    <p className="text-xs text-gray-500 truncate">
-                      {auth.user?.email}
-                    </p>
-                  </div>
-                  
-                  <button
-                    onClick={handleSignOut}
-                    disabled={loading}
-                    className="w-full flex items-center space-x-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                  >
-                    <LogOut className="h-4 w-4" />
-                    <span>{loading ? 'Выход...' : 'Выйти'}</span>
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
       </div>
     </header>
   );

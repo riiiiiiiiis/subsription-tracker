@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
-  LayoutDashboard, 
   CreditCard, 
   BarChart3, 
   Settings,
@@ -13,8 +12,7 @@ const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();
 
   const navigation = [
-    { name: 'Главная', href: '/app/dashboard', icon: LayoutDashboard },
-    { name: 'Подписки', href: '/app/subscriptions', icon: CreditCard },
+    { name: 'Подписки', href: '/app/dashboard', icon: CreditCard },
     { name: 'Аналитика', href: '/app/analytics', icon: BarChart3 },
     { name: 'Настройки', href: '/app/settings', icon: Settings },
   ];

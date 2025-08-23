@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   DollarSign, 
@@ -6,30 +6,47 @@ import {
   Calendar, 
   CreditCard,
   Plus,
-  Clock,
-  AlertCircle
+  Clock
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useShallow } from 'zustand/react/shallow';
 import useUnifiedStore from '@/store/unified-store';
 import { Card, Button } from '@/components/ui';
+import SubscriptionCard from '@/components/SubscriptionCard.jsx';
+import AddSubscriptionModal from '@/components/AddSubscriptionModal.jsx';
 import { formatCurrency, getCategoryColor, getCategoryLabel, getBillingCycleLabel } from '@/types';
 
 const Dashboard = () => {
+  // State for subscription management
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingSubscription, setEditingSubscription] = useState(null);
+
   // Optimized unified store selectors with shallow comparison
   const {
     subscriptions,
+    filteredSubscriptions,
+    filters,
     getTotalMonthlySpending,
     getTotalYearlySpending,
     getUpcomingPayments,
-    getThisMonthPayments
+    getThisMonthPayments,
+    setFilters,
+    deleteSubscription,
+    toggleSubscriptionStatus,
+    applyFilters
   } = useUnifiedStore(
     useShallow((state) => ({
       subscriptions: state.data.subscriptions,
+      filteredSubscriptions: state.data.filteredSubscriptions,
+      filters: state.filters,
       getTotalMonthlySpending: state.getTotalMonthlySpending,
       getTotalYearlySpending: state.getTotalYearlySpending,
       getUpcomingPayments: state.getUpcomingPayments,
       getThisMonthPayments: state.getThisMonthPayments,
+      setFilters: state.setFilters,
+      deleteSubscription: state.deleteSubscription,
+      toggleSubscriptionStatus: state.toggleSubscriptionStatus,
+      applyFilters: state.applyFilters,
     }))
   );
 
@@ -38,6 +55,32 @@ const Dashboard = () => {
   const upcomingPayments = getUpcomingPayments(7); // Next 7 days
   const thisMonthPayments = getThisMonthPayments();
   const activeSubscriptions = subscriptions.filter(sub => sub.isActive);
+
+  // Ensure filteredSubscriptions is updated when subscriptions change
+  useEffect(() => {
+    if (subscriptions.length > 0 && filteredSubscriptions.length === 0) {
+      const filtered = applyFilters(subscriptions, filters);
+      if (filtered.length > 0) {
+        setFilters({});
+      }
+    }
+  }, [subscriptions, filteredSubscriptions, applyFilters, filters, setFilters]);
+
+
+  const handleAddSubscription = () => {
+    setEditingSubscription(null);
+    setIsModalOpen(true);
+  };
+
+  const handleEditSubscription = (subscription) => {
+    setEditingSubscription(subscription);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setEditingSubscription(null);
+  };
 
   const stats = [
     {
@@ -71,17 +114,15 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Главная</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Подписки</h1>
           <p className="text-gray-600 mt-1">
             Отслеживайте свои подписки и расходы
           </p>
         </div>
-        <Link to="/app/subscriptions">
-          <Button className="flex items-center space-x-2">
-            <Plus className="h-4 w-4" />
-            <span>Добавить подписку</span>
-          </Button>
-        </Link>
+        <Button onClick={() => setIsModalOpen(true)} className="flex items-center space-x-2">
+          <Plus className="h-4 w-4" />
+          <span>Добавить подписку</span>
+        </Button>
       </div>
 
       {/* Stats Grid */}
@@ -117,12 +158,12 @@ const Dashboard = () => {
                 <Clock className="h-5 w-5 text-orange-500" />
                 <span>Ближайшие платежи</span>
               </Card.Title>
-              <Link 
-                to="/app/subscriptions" 
+              <button 
+                onClick={() => document.getElementById('subscriptions-section')?.scrollIntoView({ behavior: 'smooth' })}
                 className="text-sm text-primary-600 hover:text-primary-700"
               >
                 Смотреть все
-              </Link>
+              </button>
             </div>
           </Card.Header>
           <Card.Content>
@@ -160,89 +201,45 @@ const Dashboard = () => {
             )}
           </Card.Content>
         </Card>
-
-        {/* Recent Subscriptions */}
-        <Card className="p-6">
-          <Card.Header>
-            <div className="flex items-center justify-between">
-              <Card.Title className="flex items-center space-x-2">
-                <CreditCard className="h-5 w-5 text-blue-500" />
-                <span>Недавние подписки</span>
-              </Card.Title>
-              <Link 
-                to="/app/subscriptions" 
-                className="text-sm text-primary-600 hover:text-primary-700"
-              >
-                Управлять всеми
-              </Link>
-            </div>
-          </Card.Header>
-          <Card.Content>
-            {activeSubscriptions.length > 0 ? (
-              <div className="space-y-3">
-                {activeSubscriptions
-                  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-                  .slice(0, 5)
-                  .map((subscription) => (
-                    <div key={subscription.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-3 h-3 rounded-full ${getCategoryColor(subscription.category).replace('text-', 'bg-').replace('bg-', 'bg-').split(' ')[1]}`}></div>
-                        <div>
-                          <p className="font-medium text-gray-900">
-                            {subscription.name}
-                          </p>
-                          <p className="text-sm text-gray-500">
-                            {getCategoryLabel(subscription.category)}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-medium text-gray-900">
-                          {formatCurrency(subscription.amount, subscription.currency)}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          за {getBillingCycleLabel(subscription.billingCycle)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-              </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <CreditCard className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                <p className="mb-3">Подписок пока нет</p>
-                <Link to="/app/subscriptions">
-                  <Button size="sm">Добавить первую подписку</Button>
-                </Link>
-              </div>
-            )}
-          </Card.Content>
-        </Card>
       </div>
 
-      {/* Quick Actions */}
-      {totalMonthly > 100 && (
-        <Card className="p-6 bg-amber-50 border-amber-200">
-          <div className="flex items-start space-x-3">
-            <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5" />
-            <div>
-              <h3 className="font-medium text-amber-800">
-                Обнаружены высокие месячные расходы
-              </h3>
-              <p className="text-amber-700 mt-1">
-                Вы тратите {formatCurrency(totalMonthly)} в месяц на подписки.
-                Рассмотрите возможность пересмотреть подписки для оптимизации расходов.
-              </p>
-              <div className="mt-3">
-                <Link to="/app/analytics">
-                  <Button variant="outline" size="sm" className="bg-white border-amber-300 text-amber-700 hover:bg-amber-100">
-                    Смотреть аналитику
-                  </Button>
-                </Link>
+      {/* Subscriptions Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredSubscriptions.length > 0 ? (
+          filteredSubscriptions.map((subscription) => (
+            <SubscriptionCard
+              key={subscription.id}
+              subscription={subscription}
+              onEdit={() => handleEditSubscription(subscription)}
+              onDelete={() => deleteSubscription(subscription.id)}
+              onToggleStatus={() => toggleSubscriptionStatus(subscription.id)}
+              viewMode="grid"
+            />
+          ))
+        ) : (
+          <div className="col-span-full">
+            <Card className="p-12">
+              <div className="text-center text-gray-500">
+                <CreditCard className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+                <h3 className="text-lg font-medium mb-2">Подписок не найдено</h3>
+                <p className="mb-4">Добавьте свою первую подписку</p>
+                <Button onClick={handleAddSubscription}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Добавить подписку
+                </Button>
               </div>
-            </div>
+            </Card>
           </div>
-        </Card>
+        )}
+      </div>
+
+      {/* Add/Edit Subscription Modal */}
+      {isModalOpen && (
+        <AddSubscriptionModal
+          isOpen={isModalOpen}
+          onClose={handleModalClose}
+          editingSubscription={editingSubscription}
+        />
       )}
     </div>
   );

@@ -36,7 +36,7 @@ const useUnifiedStore = create(
         filters: {
           category: 'all',
           status: 'all',
-          sortBy: 'name',
+          sortBy: 'nextPayment',
           sortOrder: 'asc',
         },
         
