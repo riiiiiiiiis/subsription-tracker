@@ -11,6 +11,7 @@ import { Menu, X, Github } from 'lucide-react';
 
 const LandingPage = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showNavbar, setShowNavbar] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated, loading } = useUnifiedAuth();
   
@@ -20,6 +21,27 @@ const LandingPage = () => {
       navigate('/app/dashboard');
     }
   }, [isAuthenticated, loading, navigate]);
+
+  // Handle scroll to show/hide navbar
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY;
+      const windowHeight = window.innerHeight;
+      
+      // Show navbar after scrolling past 80% of the first screen (viewport height)
+      if (scrollPosition > windowHeight * 0.8) {
+        setShowNavbar(true);
+      } else {
+        setShowNavbar(false);
+      }
+    };
+
+    // Initial check
+    handleScroll();
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Show loading while checking authentication
   if (loading) {
@@ -45,7 +67,9 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation Header */}
-      <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-200">
+      <nav className={`fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-200 transition-all duration-300 ease-in-out ${
+        showNavbar ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
+      }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
@@ -129,7 +153,9 @@ const LandingPage = () => {
       </nav>
 
       {/* Main Content */}
-      <main className="pt-16">
+      <main className={`transition-all duration-300 ease-in-out ${
+        showNavbar ? 'pt-16' : 'pt-0'
+      }`}>
         <HeroSection onGetStarted={handleGetStarted} />
         <FeaturesSection />
         <AnalyticsDemo />

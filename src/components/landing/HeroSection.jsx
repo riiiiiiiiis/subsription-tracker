@@ -4,7 +4,7 @@ import { ArrowRight, CreditCard, BarChart3, Smartphone } from 'lucide-react';
 
 const HeroSection = ({ onGetStarted }) => {
   return (
-    <section className="relative bg-gradient-to-br from-gray-50 to-white py-20 lg:py-32">
+    <section className="relative bg-white py-20 lg:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           {/* Content */}
