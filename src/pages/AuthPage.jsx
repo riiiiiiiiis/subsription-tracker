@@ -3,8 +3,10 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useUnifiedAuth } from '../components/auth/UnifiedAuthProvider.jsx';
 import AuthForm from '../components/AuthForm.jsx';
 import Loading from '@/components/ui/Loading';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const AuthPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading } = useUnifiedAuth();
@@ -23,7 +25,7 @@ const AuthPage = () => {
   if (loading || user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loading size="md" text="" />
+        <Loading size="md" text="" textTranslationKey="common.loading" />
       </div>
     );
   }

@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabase.js';
 import { Button, Input, Loading } from './ui';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const AuthForm = () => {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
@@ -26,7 +28,7 @@ const AuthForm = () => {
         if (error) throw error;
 
         if (data.user && !data.user.email_confirmed_at) {
-          setMessage('Проверьте электронную почту для ссылки подтверждения!');
+          setMessage(t('auth.confirmationEmail'));
         }
       } else {
         const { error } = await supabase.auth.signInWithPassword({
@@ -49,10 +51,10 @@ const AuthForm = () => {
       <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-8">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Трекер Подписок
+            {t('auth.appTitle')}
           </h1>
           <p className="text-gray-600">
-            {isSignUp ? 'Создайте аккаунт' : 'Войдите в свой аккаунт'}
+            {isSignUp ? t('auth.createAccount') : t('auth.signIn')}
           </p>
         </div>
 
@@ -60,21 +62,25 @@ const AuthForm = () => {
         {/* Email/Password Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           <Input
-            label="Адрес электронной почты"
+            label={t('auth.email')}
+            labelTranslationKey="auth.email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="Введите адрес электронной почты"
+            placeholder={t('auth.emailPlaceholder')}
+            placeholderTranslationKey="auth.emailPlaceholder"
             required
             disabled={isLoading}
           />
 
           <Input
-            label="Пароль"
+            label={t('auth.password')}
+            labelTranslationKey="auth.password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            placeholder={isSignUp ? "Создайте пароль" : "Введите пароль"}
+            placeholder={isSignUp ? t('auth.passwordPlaceholderSignUp') : t('auth.passwordPlaceholderSignIn')}
+            placeholderTranslationKey={isSignUp ? "auth.passwordPlaceholderSignUp" : "auth.passwordPlaceholderSignIn"}
             required
             disabled={isLoading}
           />
@@ -97,9 +103,9 @@ const AuthForm = () => {
             className="w-full"
           >
             {isLoading ? (
-              <Loading size="sm" text="" />
+              <Loading size="sm" text="" textTranslationKey="common.loading" />
             ) : (
-              isSignUp ? 'Создать аккаунт' : 'Войти'
+              isSignUp ? t('auth.signUp') : t('auth.signIn')
             )}
           </Button>
         </form>
@@ -110,7 +116,7 @@ const AuthForm = () => {
             onClick={() => setIsSignUp(!isSignUp)}
             className="text-sm text-primary-600 hover:text-primary-500 font-medium"
           >
-            {isSignUp ? 'Уже есть аккаунт? Войти' : 'Нет аккаунта? Зарегистрироваться'}
+            {isSignUp ? t('auth.alreadyHaveAccount') : t('auth.noAccount')}
           </button>
         </div>
       </div>

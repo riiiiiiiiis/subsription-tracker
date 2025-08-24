@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const Button = ({ 
   children, 
@@ -8,8 +9,11 @@ const Button = ({
   onClick,
   type = 'button',
   className = '',
+  translationKey, // New prop for translation key
   ...props 
 }) => {
+  const { t } = useTranslation();
+  
   const baseClasses = 'font-medium rounded-lg transition-colors duration-200 focus-ring';
   
   const variants = {
@@ -36,6 +40,9 @@ const Button = ({
     className
   ].filter(Boolean).join(' ');
 
+  // Use translation if translationKey is provided, otherwise use children
+  const content = translationKey ? t(translationKey) : children;
+
   return (
     <button
       type={type}
@@ -44,7 +51,7 @@ const Button = ({
       onClick={onClick}
       {...props}
     >
-      {children}
+      {content}
     </button>
   );
 };

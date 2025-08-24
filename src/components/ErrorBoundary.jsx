@@ -2,6 +2,7 @@ import React from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
 import Button from '@/components/ui/Button.jsx';
 import Card from '@/components/ui/Card.jsx';
+import { useTranslation } from '@/hooks/useTranslation';
 
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -13,7 +14,7 @@ class ErrorBoundary extends React.Component {
     };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(_) {
     // Update state so the next render will show the fallback UI
     return { hasError: true };
   }
@@ -51,50 +52,32 @@ class ErrorBoundary extends React.Component {
             </div>
             
             <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              Oops! Something went wrong
+              <TranslationWrapper translationKey="errors.generic" />
             </h1>
             
             <p className="text-gray-600 mb-6">
-              We encountered an unexpected error. This has been logged and our team 
-              will look into it. You can try refreshing the page or clicking the button below.
+              <TranslationWrapper translationKey="errors.notFound" />
             </p>
 
             <div className="space-y-4">
               <Button 
                 onClick={this.handleRetry}
                 className="w-full flex items-center justify-center space-x-2"
+                translationKey="common.tryAgain"
               >
                 <RefreshCw className="h-4 w-4" />
-                <span>Try Again</span>
+                <span><TranslationWrapper translationKey="common.tryAgain" /></span>
               </Button>
               
               <Button 
                 variant="outline"
                 onClick={() => window.location.reload()}
                 className="w-full"
+                translationKey="common.refreshPage"
               >
-                Refresh Page
+                <TranslationWrapper translationKey="common.refreshPage" />
               </Button>
             </div>
-
-            {/* Show error details in development */}
-            {process.env.NODE_ENV === 'development' && this.state.error && (
-              <details className="mt-6 text-left">
-                <summary className="cursor-pointer text-sm font-medium text-gray-700 mb-2">
-                  Error Details (Development Only)
-                </summary>
-                <div className="bg-red-50 border border-red-200 rounded p-4 text-xs">
-                  <div className="font-medium text-red-800 mb-2">Error:</div>
-                  <pre className="text-red-700 whitespace-pre-wrap mb-4">
-                    {this.state.error && this.state.error.toString()}
-                  </pre>
-                  <div className="font-medium text-red-800 mb-2">Component Stack:</div>
-                  <pre className="text-red-700 whitespace-pre-wrap">
-                    {this.state.errorInfo.componentStack}
-                  </pre>
-                </div>
-              </details>
-            )}
           </Card>
         </div>
       );
@@ -104,5 +87,11 @@ class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
+
+// Functional component to use hooks inside class component
+const TranslationWrapper = ({ translationKey }) => {
+  const { t } = useTranslation();
+  return t(translationKey);
+};
 
 export default ErrorBoundary;

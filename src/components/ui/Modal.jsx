@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
 import Button from './Button.jsx';
+import { useTranslation } from '@/hooks/useTranslation';
 
 const Modal = ({ 
   isOpen, 
@@ -8,8 +9,11 @@ const Modal = ({
   title, 
   children, 
   size = 'md',
-  showCloseButton = true 
+  showCloseButton = true,
+  titleTranslationKey // New prop for title translation
 }) => {
+  const { t } = useTranslation();
+  
   const sizes = {
     sm: 'max-w-md',
     md: 'max-w-lg',
@@ -36,6 +40,9 @@ const Modal = ({
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
+  
+  // Use translation for title if provided
+  const translatedTitle = titleTranslationKey ? t(titleTranslationKey) : title;
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -49,11 +56,11 @@ const Modal = ({
       <div className="flex min-h-full items-center justify-center p-4">
         <div className={`relative w-full ${sizes[size]} transform overflow-hidden rounded-lg bg-white shadow-xl transition-all`}>
           {/* Header */}
-          {(title || showCloseButton) && (
+          {(translatedTitle || showCloseButton) && (
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              {title && (
+              {translatedTitle && (
                 <h3 className="text-lg font-medium text-gray-900">
-                  {title}
+                  {translatedTitle}
                 </h3>
               )}
               {showCloseButton && (
@@ -62,6 +69,7 @@ const Modal = ({
                   size="sm"
                   onClick={onClose}
                   className="p-1"
+                  translationKey="common.close"
                 >
                   <X className="h-5 w-5" />
                 </Button>

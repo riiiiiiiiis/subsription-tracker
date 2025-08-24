@@ -15,9 +15,14 @@ import useUnifiedStore from '@/store/unified-store';
 import { Card, Button } from '@/components/ui';
 import SubscriptionCard from '@/components/SubscriptionCard.jsx';
 import AddSubscriptionModal from '@/components/AddSubscriptionModal.jsx';
-import { formatCurrency, getCategoryColor, getCategoryLabel, getBillingCycleLabel } from '@/types';
+import { getCategoryColor } from '@/types';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useCategoryLabels } from '@/hooks/useTranslatedOptions';
 
 const Dashboard = () => {
+  const { t, formatCurrency } = useTranslation();
+  const { getCategoryLabel } = useCategoryLabels();
+  
   const navigate = useNavigate();
   // State for subscription management
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,7 +36,6 @@ const Dashboard = () => {
     getTotalMonthlySpending,
     getTotalYearlySpending,
     getUpcomingPayments,
-    getThisMonthPayments,
     setFilters,
     deleteSubscription,
     toggleSubscriptionStatus,
@@ -44,7 +48,6 @@ const Dashboard = () => {
       getTotalMonthlySpending: state.getTotalMonthlySpending,
       getTotalYearlySpending: state.getTotalYearlySpending,
       getUpcomingPayments: state.getUpcomingPayments,
-      getThisMonthPayments: state.getThisMonthPayments,
       setFilters: state.setFilters,
       deleteSubscription: state.deleteSubscription,
       toggleSubscriptionStatus: state.toggleSubscriptionStatus,
@@ -56,7 +59,6 @@ const Dashboard = () => {
   const totalYearly = getTotalYearlySpending();
   const upcomingPayments = getUpcomingPayments(7); // Next 7 days
   const upcomingPayments30 = getUpcomingPayments(30); // Next 30 days
-  const thisMonthPayments = getThisMonthPayments();
   const activeSubscriptions = subscriptions.filter(sub => sub.isActive);
 
   // Ensure filteredSubscriptions is updated when subscriptions change
@@ -88,15 +90,15 @@ const Dashboard = () => {
 
   const stats = [
     {
-      name: 'Активные подписки',
+      name: t('dashboard.activeSubscriptions'),
       value: activeSubscriptions.length.toString(),
       icon: CreditCard,
       color: 'text-purple-600 bg-purple-50',
     },
     {
-      name: 'Следующие 30 дней',
+      name: t('dashboard.upcomingPaymentsNext30'),
       value: upcomingPayments30.length.toString(),
-      additionalInfo: 'предстоящих платежей',
+      additionalInfo: t('dashboard.upcomingPaymentsText'),
       icon: Calendar,
       color: 'text-orange-600 bg-orange-50',
     },
@@ -107,9 +109,9 @@ const Dashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Подписки</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{t('dashboard.title')}</h1>
           <p className="text-gray-600 mt-1">
-            Отслеживайте свои подписки и расходы
+            {t('dashboard.subtitle')}
           </p>
         </div>
         <div className="flex items-center space-x-3">
@@ -118,13 +120,17 @@ const Dashboard = () => {
             size="sm"
             onClick={() => navigate('/app/settings')}
             className="flex items-center"
-            title="Настройки"
+            title={t('nav.settings')}
           >
             <Settings className="h-5 w-5" />
           </Button>
-          <Button onClick={() => setIsModalOpen(true)} className="flex items-center space-x-2">
+          <Button 
+            onClick={() => setIsModalOpen(true)} 
+            className="flex items-center space-x-2"
+            translationKey="subscriptions.addNew"
+          >
             <Plus className="h-4 w-4" />
-            <span>Добавить подписку</span>
+            <span>{t('subscriptions.addNew')}</span>
           </Button>
         </div>
       </div>
@@ -136,13 +142,13 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <Card.Title className="flex items-center space-x-2">
                 <Clock className="h-5 w-5 text-orange-500" />
-                <span>Ближайшие платежи</span>
+                <span>{t('dashboard.upcomingPayments')}</span>
               </Card.Title>
               <button 
                 onClick={() => document.getElementById('subscriptions-section')?.scrollIntoView({ behavior: 'smooth' })}
                 className="text-sm text-primary-600 hover:text-primary-700"
               >
-                Смотреть все
+                {t('common.viewAll')}
               </button>
             </div>
           </Card.Header>
@@ -176,7 +182,7 @@ const Dashboard = () => {
             ) : (
               <div className="text-center py-8 text-gray-500">
                 <Calendar className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                <p>Нет платежей на ближайшую неделю</p>
+                <p>{t('dashboard.noPayments')}</p>
               </div>
             )}
           </Card.Content>
@@ -192,12 +198,12 @@ const Dashboard = () => {
               <DollarSign className="h-6 w-6 text-green-600" />
             </div>
             <div className="ml-4">
-              <p className="text-sm font-medium text-gray-600">Ежемесячно</p>
+              <p className="text-sm font-medium text-gray-600">{t('dashboard.monthlySpending')}</p>
               <p className="text-2xl font-semibold text-gray-900">
                 {formatCurrency(totalMonthly)}
               </p>
               <p className="text-sm text-gray-500">
-                {formatCurrency(totalYearly)} в год
+                {formatCurrency(totalYearly)} {t('dashboard.yearlySpending')}
               </p>
             </div>
           </div>
@@ -248,11 +254,14 @@ const Dashboard = () => {
             <Card className="p-12">
               <div className="text-center text-gray-500">
                 <CreditCard className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-                <h3 className="text-lg font-medium mb-2">Подписок не найдено</h3>
-                <p className="mb-4">Добавьте свою первую подписку</p>
-                <Button onClick={handleAddSubscription}>
+                <h3 className="text-lg font-medium mb-2">{t('dashboard.noSubscriptions')}</h3>
+                <p className="mb-4">{t('dashboard.noSubscriptionsText')}</p>
+                <Button 
+                  onClick={handleAddSubscription}
+                  translationKey="subscriptions.addNew"
+                >
                   <Plus className="h-4 w-4 mr-2" />
-                  Добавить подписку
+                  {t('subscriptions.addNew')}
                 </Button>
               </div>
             </Card>

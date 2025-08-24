@@ -31,6 +31,7 @@ export const getCategoryColor = (category) => {
 };
 
 export const getCategoryLabel = (category) => {
+  // This will be updated to use translations
   const labels = {
     entertainment: 'Развлечения',
     utilities: 'Коммунальные услуги',
@@ -43,6 +44,7 @@ export const getCategoryLabel = (category) => {
 };
 
 export const getBillingCycleLabel = (cycle) => {
+  // This will be updated to use translations
   const labels = {
     weekly: 'Еженедельно',
     monthly: 'Ежемесячно',
@@ -123,6 +125,7 @@ export const calculateNextPaymentDate = (lastPayment, cycle) => {
 };
 
 export const formatCurrency = (amount, currency = 'USD') => {
+  // This will be updated to use translations
   return new Intl.NumberFormat('ru-RU', {
     style: 'currency',
     currency,

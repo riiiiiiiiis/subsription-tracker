@@ -12,12 +12,11 @@ import {
 import { format } from 'date-fns';
 import { Card, Button } from '@/components/ui';
 import { 
-  formatCurrency, 
   getCategoryColor, 
-  getCategoryLabel, 
-  getBillingCycleLabel,
   calculateMonthlyAmount 
 } from '@/types';
+import { useTranslation } from '@/hooks/useTranslation';
+import { useCategoryLabels, useBillingCycleLabels } from '@/hooks/useTranslatedOptions';
 
 const SubscriptionCard = ({ 
   subscription, 
@@ -25,6 +24,10 @@ const SubscriptionCard = ({
   onDelete, 
   onToggleActive 
 }) => {
+  const { t, formatCurrency } = useTranslation();
+  const { getCategoryLabel } = useCategoryLabels();
+  const { getBillingCycleLabel } = useBillingCycleLabels();
+  
   const monthlyAmount = calculateMonthlyAmount(subscription.amount, subscription.billingCycle);
   const categoryColor = getCategoryColor(subscription.category);
 
@@ -37,7 +40,7 @@ const SubscriptionCard = ({
   };
 
   const handleDelete = () => {
-    if (window.confirm(`Вы уверены, что хотите удалить "${subscription.name}"?`)) {
+    if (window.confirm(t('subscriptions.deleteConfirm'))) {
       onDelete(subscription.id);
     }
   };
@@ -75,7 +78,7 @@ const SubscriptionCard = ({
                 size="sm"
                 onClick={handleWebsiteClick}
                 className="p-1"
-                title="Перейти на сайт"
+                title={t('subscriptions.visitWebsite')}
               >
                 <ExternalLink className="h-4 w-4" />
               </Button>
@@ -85,7 +88,7 @@ const SubscriptionCard = ({
               size="sm"
               onClick={handleToggleActive}
               className="p-1"
-              title={subscription.isActive ? 'Деактивировать' : 'Активировать'}
+              title={subscription.isActive ? t('subscriptions.deactivate') : t('subscriptions.activate')}
             >
               {subscription.isActive ? (
                 <ToggleRight className="h-4 w-4 text-green-500" />
@@ -98,7 +101,8 @@ const SubscriptionCard = ({
               size="sm"
               onClick={handleEdit}
               className="p-1"
-              title="Редактировать подписку"
+              title={t('subscriptions.editSubscription')}
+              translationKey="common.edit"
             >
               <Edit3 className="h-4 w-4" />
             </Button>
@@ -107,7 +111,8 @@ const SubscriptionCard = ({
               size="sm"
               onClick={handleDelete}
               className="p-1 danger-hover border-red-300"
-              title="Удалить подписку"
+              title={t('subscriptions.deleteSubscription')}
+              translationKey="common.delete"
             >
               <Trash2 className="h-4 w-4" />
             </Button>
@@ -121,12 +126,12 @@ const SubscriptionCard = ({
               {formatCurrency(subscription.amount, subscription.currency)}
             </span>
             <span className="text-gray-500 text-sm">
-              за {getBillingCycleLabel(subscription.billingCycle)}
+              {t('subscriptions.per')} {getBillingCycleLabel(subscription.billingCycle)}
             </span>
           </div>
           {subscription.billingCycle !== 'monthly' && (
             <p className="text-sm text-gray-500 mt-1">
-              ~{formatCurrency(monthlyAmount, subscription.currency)} в месяц
+              ~{formatCurrency(monthlyAmount, subscription.currency)} {t('subscriptions.perMonth')}
             </p>
           )}
         </div>
@@ -138,7 +143,7 @@ const SubscriptionCard = ({
               {getCategoryLabel(subscription.category)}
             </span>
             <span className={`text-xs px-2 py-1 rounded ${subscription.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'}`}>
-              {subscription.isActive ? 'Активна' : 'Неактивна'}
+              {subscription.isActive ? t('subscriptions.active') : t('subscriptions.inactive')}
             </span>
           </div>
           
@@ -146,7 +151,7 @@ const SubscriptionCard = ({
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <Calendar className="h-4 w-4" />
               <span>
-                Следующий платеж: {format(new Date(subscription.nextPaymentDate), 'MMM dd, yyyy')}
+                {t('subscriptions.nextPayment')}: {format(new Date(subscription.nextPaymentDate), 'MMM dd, yyyy')}
               </span>
             </div>
           )}
