@@ -71,24 +71,24 @@ const useUnifiedStore = create(
           }));
           
           try {
-            // Set initial loading state - let onAuthStateChange handle authentication
-            console.log('🔐 UnifiedStore: Waiting for authentication state from onAuthStateChange...');
+            console.log('🔐 UnifiedStore: Actively fetching initial session...');
+            const { data: { session }, error } = await supabase.auth.getSession();
+            if (error) {
+              console.error('💥 UnifiedStore: Error fetching initial session:', error);
+              throw error;
+            }
             
-            // Don't make blocking getSession() call - rely on onAuthStateChange for auth state
-            // The auth state will be set by handleAuthStateChange when onAuthStateChange fires
-            // The INITIAL_SESSION event will properly set isLoading to false
+            // Manually trigger the auth state handler with the initial session info
+            get().handleAuthStateChange('INITIAL_SESSION', session);
             
           } catch (error) {
-            console.error('💥 UnifiedStore: Error initializing store:', error);
+            console.error('💥 UnifiedStore: Error during initialization:', error);
+            // Ensure loading is turned off even if session fetch fails
+            get().handleAuthStateChange('INITIAL_SESSION', null);
             set(state => ({
               auth: {
                 ...state.auth,
                 error: error.message,
-                isLoading: false
-              },
-              data: {
-                ...state.data,
-                isLoading: false
               }
             }));
           }

@@ -245,7 +245,7 @@ const Dashboard = () => {
               subscription={subscription}
               onEdit={() => handleEditSubscription(subscription)}
               onDelete={() => deleteSubscription(subscription.id)}
-              onToggleStatus={() => toggleSubscriptionStatus(subscription.id)}
+              onToggleActive={() => toggleSubscriptionStatus(subscription.id)}
               viewMode="grid"
             />
           ))
