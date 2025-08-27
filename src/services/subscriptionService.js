@@ -140,7 +140,7 @@ class SubscriptionService {
         return { data: null, error };
       }
 
-      return { data, error: null };
+      return { data: subscriptionFromDatabase(data), error: null };
     } catch (error) {
       console.error('Unexpected error updating subscription:', error);
       return { data: null, error };
