@@ -187,7 +187,7 @@ class SubscriptionService {
 
       // Toggle the status
       const { data, error } = await this.updateSubscription(id, {
-        is_active: !currentSub.is_active
+        isActive: !currentSub.isActive
       });
 
       return { data, error };
