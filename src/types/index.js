@@ -89,7 +89,7 @@ export const getStatusOptions = () => [
 export const getSortOptions = () => [
   { value: 'name', label: 'Название' },
   { value: 'amount', label: 'Сумма' },
-  { value: 'nextPayment', label: 'Следующий платеж' },
+  { value: 'nextPaymentDate', label: 'Следующий платеж' },
   { value: 'createdAt', label: 'Дата добавления' },
 ];
 

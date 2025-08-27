@@ -853,24 +853,47 @@ const useUnifiedStore = create(
             filtered = filtered.filter(sub => sub.isActive === isActive);
           }
 
-          // Sort
+          // Sort: First by active status (active subscriptions first), then by selected criteria
           filtered.sort((a, b) => {
+            // Primary sort: Active subscriptions first, inactive last
+            const aActive = a.isActive ? 1 : 0;
+            const bActive = b.isActive ? 1 : 0;
+
+            if (aActive !== bActive) {
+              return bActive - aActive; // Active (1) comes before inactive (0)
+            }
+
+            // Secondary sort: By selected criteria
+            let comparison = 0;
             const aValue = a[activeFilters.sortBy];
             const bValue = b[activeFilters.sortBy];
-            
-            let comparison = 0;
-            
-            // Special handling for date fields
+
+            // Special handling for inactive subscriptions when sorting by nextPaymentDate
             if (activeFilters.sortBy === 'nextPaymentDate') {
-              const aDate = new Date(aValue);
-              const bDate = new Date(bValue);
-              comparison = aDate - bDate;
+              // For inactive subscriptions, use updated_at or name instead of nextPaymentDate
+              const aSortValue = a.isActive ? aValue : (a.updated_at || a.name || '');
+              const bSortValue = b.isActive ? bValue : (b.updated_at || b.name || '');
+
+              if (a.isActive && b.isActive) {
+                // Both active: sort by nextPaymentDate
+                const aDate = new Date(aSortValue);
+                const bDate = new Date(bSortValue);
+                comparison = aDate - bDate;
+              } else {
+                // At least one inactive: sort by updated_at (most recently updated first) or name
+                if (a.updated_at && b.updated_at) {
+                  comparison = new Date(b.updated_at) - new Date(a.updated_at); // Most recent first
+                } else {
+                  // Fallback to name comparison
+                  comparison = (aSortValue || '').localeCompare(bSortValue || '');
+                }
+              }
             } else {
               // Regular comparison for other fields
               if (aValue < bValue) comparison = -1;
               if (aValue > bValue) comparison = 1;
             }
-            
+
             return activeFilters.sortOrder === 'desc' ? -comparison : comparison;
           });
 
