@@ -52,7 +52,7 @@ export const useUnifiedStoreInit = () => {
       // Don't unsubscribe immediately - let it persist for app lifetime
       // Only unsubscribe on actual app unmount
     };
-  }, []); // Empty dependency array - this should only run once on mount
+  }, [initialize, handleAuthStateChange]);
   
   // Cleanup global subscription on app unmount (window unload)
   useEffect(() => {
