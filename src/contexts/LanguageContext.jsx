@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
+import React, { createContext, useState, useEffect, useMemo, useCallback } from 'react';
 import { translations, SUPPORTED_LANGUAGES } from '@/translations';
 
 // Create the Language Context
@@ -109,15 +109,6 @@ export const LanguageProvider = ({ children }) => {
       {children}
     </LanguageContext.Provider>
   );
-};
-
-// useTranslation hook to access the translation context
-export const useTranslation = () => {
-  const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error('useTranslation must be used within a LanguageProvider');
-  }
-  return context;
 };
 
 export default LanguageContext;
