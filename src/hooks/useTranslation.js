@@ -1,8 +1,15 @@
-import { useTranslation as useTranslationContext } from '@/contexts/LanguageContext';
+import { useContext } from 'react';
+import LanguageContext from '@/contexts/LanguageContext.jsx';
 
 // Enhanced useTranslation hook with additional utility functions
 export const useTranslation = () => {
-  const { currentLanguage, setLanguage, t, isLoading } = useTranslationContext();
+  const context = useContext(LanguageContext);
+
+  if (!context) {
+    throw new Error('useTranslation must be used within a LanguageProvider');
+  }
+
+  const { currentLanguage, setLanguage, t, isLoading } = context;
   
   // Enhanced translation function with array key support
   const translate = (key, values = {}) => {
@@ -33,7 +40,7 @@ export const useTranslation = () => {
         currency: currency
       }).format(amount);
     } catch (error) {
-      // Fallback to simple formatting
+      console.error('Failed to format currency', error);
       return `${amount} ${currency}`;
     }
   };
@@ -48,7 +55,7 @@ export const useTranslation = () => {
         ...options
       }).format(new Date(date));
     } catch (error) {
-      // Fallback to simple formatting
+      console.error('Failed to format date', error);
       return new Date(date).toLocaleDateString();
     }
   };

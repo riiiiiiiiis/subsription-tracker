@@ -1,12 +1,10 @@
 import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useUnifiedAuth } from '../components/auth/UnifiedAuthProvider.jsx';
+import { useUnifiedAuth } from '../components/auth/UnifiedAuthContext.js';
 import AuthForm from '../components/AuthForm.jsx';
 import Loading from '@/components/ui/Loading';
-import { useTranslation } from '@/hooks/useTranslation';
 
 const AuthPage = () => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const { user, loading } = useUnifiedAuth();

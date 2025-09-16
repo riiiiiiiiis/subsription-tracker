@@ -13,7 +13,7 @@ import useUnifiedStore from '@/store/unified-store';
 import { Button, Input, Select, Card } from '@/components/ui';
 import SubscriptionCard from '../components/SubscriptionCard.jsx';
 import AddSubscriptionModal from '../components/AddSubscriptionModal.jsx';
-import { getCategoryLabel, getCategoryOptionsWithAll, getStatusOptions, getSortOptions } from '@/types';
+import { getCategoryOptionsWithAll, getStatusOptions, getSortOptions } from '@/types';
 
 const Subscriptions = () => {
   // Optimized unified store selectors with shallow comparison

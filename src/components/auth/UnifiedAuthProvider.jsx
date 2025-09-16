@@ -1,37 +1,13 @@
-import React, { createContext, useContext } from 'react';
+import React from 'react';
 import useUnifiedStore from '../../store/unified-store.js';
 import { supabase } from '../../lib/supabase.js';
-
-// Create authentication context that uses unified store
-const UnifiedAuthContext = createContext({
-  user: null,
-  profile: null,
-  session: null,
-  loading: true,
-  error: null,
-  isAuthenticated: false,
-  signIn: () => {},
-  signUp: () => {},
-  signOut: () => {},
-  resetPassword: () => {},
-  getDisplayName: () => 'User',
-});
-
-// Custom hook to use unified authentication context
-export const useUnifiedAuth = () => {
-  const context = useContext(UnifiedAuthContext);
-  if (!context) {
-    throw new Error('useUnifiedAuth must be used within a UnifiedAuthProvider');
-  }
-  return context;
-};
+import UnifiedAuthContext from './UnifiedAuthContext.js';
 
 // Unified AuthProvider component
 export const UnifiedAuthProvider = ({ children }) => {
   // Get auth state from unified store
   const auth = useUnifiedStore(state => state.auth);
   const getDisplayName = useUnifiedStore(state => state.getDisplayName);
-  const resetToUnauthenticated = useUnifiedStore(state => state.resetToUnauthenticated);
 
   // Authentication methods that work with unified store
   const signIn = async (email, password) => {

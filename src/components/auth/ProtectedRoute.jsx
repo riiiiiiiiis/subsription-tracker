@@ -1,10 +1,10 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import { useUnifiedAuth } from './UnifiedAuthProvider.jsx';
+import { useUnifiedAuth } from './UnifiedAuthContext.js';
 import Loading from '../ui/Loading.jsx';
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading, isAuthenticated } = useUnifiedAuth();
+  const { loading, isAuthenticated } = useUnifiedAuth();
   const location = useLocation();
 
   // Show loading spinner while checking authentication

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUnifiedAuth } from './auth/UnifiedAuthProvider.jsx';
+import { useUnifiedAuth } from './auth/UnifiedAuthContext.js';
 import Button from './ui/Button.jsx';
 import HeroSection from './landing/HeroSection.jsx';
 import FeaturesSection from './landing/FeaturesSection.jsx';

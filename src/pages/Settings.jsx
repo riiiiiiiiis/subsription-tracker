@@ -3,7 +3,7 @@ import { Settings as SettingsIcon, Download, Trash2, User, LogOut, Globe } from 
 import { useShallow } from 'zustand/react/shallow';
 import useUnifiedStore from '@/store/unified-store';
 import { Card, Button } from '@/components/ui';
-import { useUnifiedAuth } from '@/components/auth/UnifiedAuthProvider';
+import { useUnifiedAuth } from '@/components/auth/UnifiedAuthContext.js';
 import LanguageSwitcher from '@/components/LanguageSwitcher.jsx';
 import { useTranslation } from '@/hooks/useTranslation';
 
