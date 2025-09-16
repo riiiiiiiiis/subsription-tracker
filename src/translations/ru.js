@@ -78,7 +78,7 @@ export default {
     education: 'Образование',
     news: 'Новости и медиа',
     productivity: 'Продуктивность',
-    other: 'Проче��'
+    other: 'Прочее'
   },
   
   billingCycles: {
