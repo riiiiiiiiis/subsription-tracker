@@ -274,7 +274,7 @@ const Dashboard = () => {
         <AddSubscriptionModal
           isOpen={isModalOpen}
           onClose={handleModalClose}
-          editingSubscription={editingSubscription}
+          editSubscription={editingSubscription}
         />
       )}
     </div>
