@@ -7,6 +7,7 @@ import FeaturesSection from './landing/FeaturesSection.jsx';
 import AnalyticsDemo from './landing/AnalyticsDemo.jsx';
 import AboutSection from './landing/AboutSection.jsx';
 import Loading from '@/components/ui/Loading';
+import { useTranslation } from '@/hooks/useTranslation';
 import { Menu, X, Github } from 'lucide-react';
 
 const LandingPage = () => {
@@ -14,6 +15,9 @@ const LandingPage = () => {
   const [showNavbar, setShowNavbar] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated, loading } = useUnifiedAuth();
+  const { t } = useTranslation();
+  const brandName = t('landing.brandName');
+  const currentYear = new Date().getFullYear();
   
   // Redirect authenticated users to dashboard
   useEffect(() => {
@@ -47,7 +51,7 @@ const LandingPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <Loading size="lg" text="Загрузка..." />
+        <Loading size="lg" text={t('common.loading')} />
       </div>
     );
   }
@@ -74,7 +78,7 @@ const LandingPage = () => {
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
             <div className="flex-shrink-0">
-              <h1 className="text-xl font-bold text-gray-900">Трекер Подписок</h1>
+              <h1 className="text-xl font-bold text-gray-900">{brandName}</h1>
             </div>
 
             {/* Desktop Navigation */}
@@ -84,19 +88,19 @@ const LandingPage = () => {
                   onClick={() => scrollToSection('features')}
                   className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
                 >
-                  Функции
+                  {t('landing.nav.features')}
                 </button>
                 <button
                   onClick={() => scrollToSection('analytics')}
                   className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
                 >
-                  Как это работает
+                  {t('landing.nav.howItWorks')}
                 </button>
                 <button
                   onClick={() => scrollToSection('about')}
                   className="text-gray-600 hover:text-gray-900 px-3 py-2 text-sm font-medium transition-colors"
                 >
-                  О проекте
+                  {t('landing.nav.about')}
                 </button>
               </div>
             </div>
@@ -104,7 +108,7 @@ const LandingPage = () => {
             {/* CTA Button */}
             <div className="hidden md:block">
               <Button onClick={handleGetStarted} variant="primary">
-                Начать бесплатно
+                {t('landing.nav.startFree')}
               </Button>
             </div>
 
@@ -128,23 +132,23 @@ const LandingPage = () => {
                 onClick={() => scrollToSection('features')}
                 className="text-gray-600 hover:text-gray-900 block px-3 py-2 text-base font-medium w-full text-left"
               >
-                Функции
+                {t('landing.nav.features')}
               </button>
               <button
                 onClick={() => scrollToSection('analytics')}
                 className="text-gray-600 hover:text-gray-900 block px-3 py-2 text-base font-medium w-full text-left"
               >
-                Как это работает
+                {t('landing.nav.howItWorks')}
               </button>
               <button
                 onClick={() => scrollToSection('about')}
                 className="text-gray-600 hover:text-gray-900 block px-3 py-2 text-base font-medium w-full text-left"
               >
-                О проекте
+                {t('landing.nav.about')}
               </button>
               <div className="px-3 py-2">
                 <Button onClick={handleGetStarted} variant="primary" className="w-full">
-                  Начать бесплатно
+                  {t('landing.nav.startFree')}
                 </Button>
               </div>
             </div>
@@ -167,17 +171,36 @@ const LandingPage = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <h3 className="text-lg font-semibold mb-4">Трекер Подписок</h3>
-              <p className="text-gray-400">
-                Простое отслеживание ваших подписок с облачным хранением данных.
-              </p>
+              <h3 className="text-lg font-semibold mb-4">{brandName}</h3>
+              <p className="text-gray-400">{t('landing.footer.description')}</p>
             </div>
             <div>
-              <h4 className="text-sm font-semibold mb-4 uppercase tracking-wider">Продукт</h4>
+              <h4 className="text-sm font-semibold mb-4 uppercase tracking-wider">{t('landing.footer.product')}</h4>
               <ul className="space-y-2">
-                <li><button onClick={() => scrollToSection('features')} className="text-gray-400 hover:text-white text-sm">Функции</button></li>
-                <li><button onClick={() => scrollToSection('analytics')} className="text-gray-400 hover:text-white text-sm">Как это работает</button></li>
-                <li><button onClick={handleGetStarted} className="text-gray-400 hover:text-white text-sm">Начать</button></li>
+                <li>
+                  <button
+                    onClick={() => scrollToSection('features')}
+                    className="text-gray-400 hover:text-white text-sm"
+                  >
+                    {t('landing.nav.features')}
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => scrollToSection('analytics')}
+                    className="text-gray-400 hover:text-white text-sm"
+                  >
+                    {t('landing.nav.howItWorks')}
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={handleGetStarted}
+                    className="text-gray-400 hover:text-white text-sm"
+                  >
+                    {t('landing.getStarted')}
+                  </button>
+                </li>
               </ul>
             </div>
           </div>
@@ -191,12 +214,15 @@ const LandingPage = () => {
               className="inline-flex items-center space-x-2 bg-gray-800 hover:bg-gray-700 text-white px-6 py-3 rounded-lg transition-colors duration-200 font-medium"
             >
               <Github size={20} />
-              <span>Весь код на GitHub</span>
+              <span>{t('landing.footer.githubCta')}</span>
             </a>
           </div>
           
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400 text-sm">
-            © 2025 Трекер Подписок. Все права защищены.
+            {t('landing.footer.copyright', {
+              year: currentYear,
+              appName: brandName
+            })}
           </div>
         </div>
       </footer>

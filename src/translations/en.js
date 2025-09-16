@@ -197,6 +197,19 @@ export default {
   
   // Landing Page
   landing: {
+    brandName: 'Subscription Tracker',
+    nav: {
+      features: 'Features',
+      howItWorks: 'How it works',
+      about: 'About',
+      startFree: 'Start for free'
+    },
+    footer: {
+      description: 'Simple subscription tracking with cloud data storage.',
+      product: 'Product',
+      githubCta: 'View code on GitHub',
+      copyright: '© {{year}} {{appName}}. All rights reserved.'
+    },
     title: 'Subscription management made simple',
     subtitle: 'Track all your subscriptions in one place',
     getStarted: 'Get Started',

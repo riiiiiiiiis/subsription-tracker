@@ -197,6 +197,19 @@ export default {
   
   // Landing Page
   landing: {
+    brandName: 'Трекер Подписок',
+    nav: {
+      features: 'Функции',
+      howItWorks: 'Как это работает',
+      about: 'О проекте',
+      startFree: 'Начать бесплатно'
+    },
+    footer: {
+      description: 'Простое отслеживание ваших подписок с облачным хранением данных.',
+      product: 'Продукт',
+      githubCta: 'Весь код на GitHub',
+      copyright: '© {{year}} {{appName}}. Все права защищены.'
+    },
     title: 'Управление подписками стало простым',
     subtitle: 'Отслеживайте все ваши подписки в одном месте',
     getStarted: 'Начать',
