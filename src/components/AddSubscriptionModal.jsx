@@ -4,7 +4,7 @@ import Modal from '@/components/ui/Modal.jsx';
 import Button from '@/components/ui/Button.jsx';
 import Input from '@/components/ui/Input.jsx';
 import Select from '@/components/ui/Select.jsx';
-import useUnifiedStore from '@/store/unified-store';
+import useAppStore from '@/store';
 import { useTranslatedOptions } from '@/hooks/useTranslatedOptions';
 import { useTranslation } from '@/hooks/useTranslation';
 
@@ -20,8 +20,8 @@ const AddSubscriptionModal = ({
     getCurrencyOptions 
   } = useTranslatedOptions();
   
-  const addSubscription = useUnifiedStore(state => state.addSubscription);
-  const updateSubscription = useUnifiedStore(state => state.updateSubscription);
+  const addSubscription = useAppStore(state => state.addSubscription);
+  const updateSubscription = useAppStore(state => state.updateSubscription);
   const isEditing = !!editSubscription;
 
   const [formData, setFormData] = useState({

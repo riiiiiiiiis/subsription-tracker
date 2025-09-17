@@ -1,7 +1,7 @@
 import React from 'react';
 import { Settings as SettingsIcon, Download, Trash2, User, LogOut, Globe } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
-import useUnifiedStore from '@/store/unified-store';
+import useAppStore from '@/store';
 import { Card, Button } from '@/components/ui';
 import { useUnifiedAuth } from '@/components/auth/UnifiedAuthContext.js';
 import LanguageSwitcher from '@/components/LanguageSwitcher.jsx';
@@ -11,7 +11,7 @@ const Settings = () => {
   const { t } = useTranslation();
   const { signOut, loading } = useUnifiedAuth();
   
-  const { auth, subscriptions } = useUnifiedStore(
+  const { auth, subscriptions } = useAppStore(
     useShallow((state) => ({
       auth: state.auth,
       subscriptions: state.data.subscriptions

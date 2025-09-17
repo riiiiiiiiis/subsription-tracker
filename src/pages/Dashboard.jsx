@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { useShallow } from 'zustand/react/shallow';
-import useUnifiedStore from '@/store/unified-store';
+import useAppStore from '@/store';
 import { Card, Button } from '@/components/ui';
 import SubscriptionCard from '@/components/SubscriptionCard.jsx';
 import AddSubscriptionModal from '@/components/AddSubscriptionModal.jsx';
@@ -40,7 +40,7 @@ const Dashboard = () => {
     deleteSubscription,
     toggleSubscriptionStatus,
     applyFilters
-  } = useUnifiedStore(
+  } = useAppStore(
     useShallow((state) => ({
       subscriptions: state.data.subscriptions,
       filteredSubscriptions: state.data.filteredSubscriptions,

@@ -1,13 +1,13 @@
 import React from 'react';
-import useUnifiedStore from '../../store/unified-store.js';
+import useAppStore from '@/store';
 import { supabase } from '../../lib/supabase.js';
 import UnifiedAuthContext from './UnifiedAuthContext.js';
 
 // Unified AuthProvider component
 export const UnifiedAuthProvider = ({ children }) => {
   // Get auth state from unified store
-  const auth = useUnifiedStore(state => state.auth);
-  const getDisplayName = useUnifiedStore(state => state.getDisplayName);
+  const auth = useAppStore(state => state.auth);
+  const getDisplayName = useAppStore(state => state.getDisplayName);
 
   // Authentication methods that work with unified store
   const signIn = async (email, password) => {
