@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import useUnifiedStore from '../store/unified-store.js';
+import useAppStore from '@/store';
 import { supabase } from '../lib/supabase.js';
 
 // Global flag to track if auth listener is already initialized
@@ -13,7 +13,7 @@ let globalAuthSubscription = null;
  * Resilient to React StrictMode double-effect runs
  */
 export const useUnifiedStoreInit = () => {
-  const { initialize, handleAuthStateChange } = useUnifiedStore();
+  const { initialize, handleAuthStateChange } = useAppStore();
   const hasInitialized = useRef(false);
 
   useEffect(() => {

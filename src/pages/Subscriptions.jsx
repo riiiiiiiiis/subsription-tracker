@@ -9,7 +9,7 @@ import {
   SortDesc 
 } from 'lucide-react';
 import { useShallow } from 'zustand/react/shallow';
-import useUnifiedStore from '@/store/unified-store';
+import useAppStore from '@/store';
 import { Button, Input, Select, Card } from '@/components/ui';
 import SubscriptionCard from '../components/SubscriptionCard.jsx';
 import AddSubscriptionModal from '../components/AddSubscriptionModal.jsx';
@@ -25,7 +25,7 @@ const Subscriptions = () => {
     deleteSubscription,
     toggleSubscriptionStatus,
     applyFilters
-  } = useUnifiedStore(
+  } = useAppStore(
     useShallow((state) => ({
       subscriptions: state.data.subscriptions,
       filteredSubscriptions: state.data.filteredSubscriptions,
