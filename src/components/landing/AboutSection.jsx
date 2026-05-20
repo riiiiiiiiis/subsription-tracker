@@ -12,150 +12,190 @@ const AboutSection = ({ onGetStarted }) => {
     'Настраивайте приложение за несколько минут'
   ];
 
-
-
   const trustIndicators = [
     {
       icon: Users,
-      title: "Простое использование",
-      description: "Настройка за несколько минут"
+      title: 'Простое использование',
+      description: 'Настройка за несколько минут'
     },
     {
       icon: Shield,
-      title: "Облачное хранение",
-      description: "Безопасное хранение в Supabase"
+      title: 'Облачное хранение',
+      description: 'Безопасное хранение в Supabase'
     },
     {
       icon: Zap,
-      title: "Аутентификация",
-      description: "Надёжная система входа и регистрации"
+      title: 'Аутентификация',
+      description: 'Надёжная система входа и регистрации'
     },
     {
       icon: Heart,
-      title: "Открытый код",
-      description: "Полная прозрачность работы приложения"
+      title: 'Открытый код',
+      description: 'Полная прозрачность работы приложения'
+    }
+  ];
+
+  const processSteps = [
+    {
+      step: '1',
+      title: 'Добавьте подписки',
+      description: 'Вручную введите названия, стоимость и периодичность платежей'
+    },
+    {
+      step: '2',
+      title: 'Организуйте данные',
+      description: 'Распределите по категориям, задайте напоминания и фильтры'
+    },
+    {
+      step: '3',
+      title: 'Отслеживайте расходы',
+      description: 'Смотрите аналитику и контролируйте бюджет в одном месте'
+    }
+  ];
+
+  const faqItems = [
+    {
+      question: 'Нужна ли регистрация для использования?',
+      answer:
+        'Да, нужно создать аккаунт с email и паролем. Это необходимо для безопасного хранения ваших данных.'
+    },
+    {
+      question: 'Где хранятся мои данные?',
+      answer:
+        'Все данные хранятся в облаке Supabase с автоматической синхронизацией между устройствами.'
+    },
+    {
+      question: 'Какая аналитика доступна?',
+      answer:
+        'Месячные и годовые суммы, количество активных подписок, предстоящие платежи и базовая категоризация.'
+    },
+    {
+      question: 'Как работает защита данных?',
+      answer:
+        'Используется Row Level Security (RLS) в Supabase, которая гарантирует, что каждый пользователь видит только свои данные.'
     }
   ];
 
   return (
-    <section id="about" className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
+    <section id="about" className="relative overflow-hidden bg-slate-950 py-24">
+      <div className="pointer-events-none absolute -top-20 left-0 h-72 w-72 rounded-full bg-primary-500/20 blur-3xl"></div>
+      <div className="pointer-events-none absolute bottom-0 right-0 h-80 w-80 rounded-full bg-blue-500/15 blur-3xl"></div>
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Benefits Section */}
-        <div className="text-center mb-20">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            Почему стоит выбрать Трекер Подписок?
+        <div className="text-center">
+          <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
+            Почему именно мы
+          </span>
+          <h2 className="mt-6 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+            Прозрачный контроль подписок без лишних интеграций
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-12">
-            Простой и честный способ отслеживания ваших подписок 
-            без сложных интеграций и рисков для безопасности.
+          <p className="mt-4 text-lg leading-relaxed text-slate-300 max-w-3xl mx-auto">
+            Простой и честный способ отслеживания расходов: вручную добавляйте сервисы, планируйте платежи
+            и управляйте данными в защищённом пространстве Supabase.
           </p>
 
           {/* Benefits Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-            {benefits.map((benefit, index) => (
-              <div key={index} className="flex items-center text-left">
-                <CheckCircle className="h-5 w-5 text-green-500 mr-3 flex-shrink-0" />
-                <span className="text-gray-700">{benefit}</span>
+          <div className="mt-14 grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-6">
+            {benefits.map((benefit) => (
+              <div
+                key={benefit}
+                className="flex items-center rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm text-slate-200"
+              >
+                <CheckCircle className="mr-3 h-5 w-5 flex-shrink-0 text-emerald-300" />
+                <span>{benefit}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Trust Indicators */}
-        <div className="mb-20">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {trustIndicators.map((indicator, index) => {
+        <div className="mt-20">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {trustIndicators.map((indicator) => {
               const Icon = indicator.icon;
               return (
-                <div key={index} className="text-center">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Icon className="h-8 w-8 text-gray-600" />
+                <div
+                  key={indicator.title}
+                  className="rounded-3xl border border-white/10 bg-white/5 p-6 text-center shadow-lg shadow-primary-500/5"
+                >
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary-400/30 to-blue-500/30 text-white">
+                    <Icon className="h-8 w-8" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-2">{indicator.title}</h3>
-                  <p className="text-sm text-gray-600">{indicator.description}</p>
+                  <h3 className="text-base font-semibold text-white">{indicator.title}</h3>
+                  <p className="mt-2 text-sm text-slate-300">{indicator.description}</p>
                 </div>
               );
             })}
           </div>
         </div>
 
-        {/* Testimonials - Removed fake testimonials, replaced with simple feature highlight */}
-        <div className="mb-20">
-          <div className="text-center mb-12">
-            <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
-              Как это работает
-            </h3>
-            <p className="text-lg text-gray-600">
+        {/* Process */}
+        <div className="mt-20">
+          <div className="text-center">
+            <h3 className="text-2xl font-semibold text-white sm:text-3xl">Как это работает</h3>
+            <p className="mt-3 text-lg text-slate-300">
               Простой трёхэтапный процесс для начала отслеживания ваших подписок
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-blue-600">1</span>
+          <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-3">
+            {processSteps.map((item) => (
+              <div
+                key={item.step}
+                className="rounded-3xl border border-white/10 bg-white/5 p-8 text-center transition-transform duration-300 hover:-translate-y-2"
+              >
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary-400/30 to-blue-500/30 text-2xl font-bold text-white">
+                  {item.step}
+                </div>
+                <h4 className="mt-6 text-lg font-semibold text-white">{item.title}</h4>
+                <p className="mt-3 text-sm text-slate-300">{item.description}</p>
               </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Добавьте подписки</h4>
-              <p className="text-gray-600">Вручную введите названия и стоимость ваших подписок</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-blue-600">2</span>
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Организуйте данные</h4>
-              <p className="text-gray-600">Распределите по категориям и укажите периодичность</p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl font-bold text-blue-600">3</span>
-              </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Отслеживайте расходы</h4>
-              <p className="text-gray-600">Просматривайте простую аналитику и планируйте бюджет</p>
-            </div>
+            ))}
           </div>
         </div>
 
         {/* Final CTA Section */}
-        <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-8 lg:p-12 text-center text-white">
-          <div className="max-w-3xl mx-auto">
-            <Award className="h-16 w-16 text-yellow-400 mx-auto mb-6" />
-            <h3 className="text-3xl lg:text-4xl font-bold mb-4">
+        <div className="mt-24 overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900 to-slate-800 p-10 text-center text-white shadow-2xl shadow-primary-500/10">
+          <div className="absolute -left-12 top-0 h-52 w-52 rounded-full bg-primary-500/20 blur-3xl"></div>
+          <div className="absolute -right-12 bottom-0 h-52 w-52 rounded-full bg-blue-500/20 blur-3xl"></div>
+          <div className="relative mx-auto max-w-3xl">
+            <Award className="mx-auto mb-6 h-16 w-16 text-amber-300" />
+            <h3 className="text-3xl font-semibold sm:text-4xl">
               Начните отслеживание подписок сегодня
             </h3>
-            <p className="text-xl text-gray-300 mb-8">
-              Простой способ взять под контроль свои регулярные расходы. 
-              Начните сегодня и увидьте все свои подписки в одном месте.
+            <p className="mt-4 text-xl text-slate-200">
+              Простой способ взять под контроль свои регулярные расходы и избавиться от неожиданных списаний.
             </p>
 
             {/* Value Props */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white mb-1">Облачное хранение</div>
-                <div className="text-sm text-gray-400">Ваши данные в безопасности</div>
+            <div className="mt-8 grid grid-cols-1 gap-6 text-sm text-slate-200 sm:grid-cols-3">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="text-lg font-semibold text-white">Облачное хранение</div>
+                <div className="mt-1 text-xs text-slate-300">Ваши данные в безопасности</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white mb-1">2 Минуты</div>
-                <div className="text-sm text-gray-400">Простая регистрация</div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="text-lg font-semibold text-white">2 минуты</div>
+                <div className="mt-1 text-xs text-slate-300">Простая регистрация</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-white mb-1">Полный контроль</div>
-                <div className="text-sm text-gray-400">Никаких скрытых функций</div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                <div className="text-lg font-semibold text-white">Полный контроль</div>
+                <div className="mt-1 text-xs text-slate-300">Никаких скрытых функций</div>
               </div>
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button 
-                onClick={onGetStarted} 
-                className="px-6 py-3 text-base font-semibold bg-white text-gray-900 hover:bg-gray-100 border-2 border-gray-200 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
+            <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
+              <Button
+                onClick={onGetStarted}
+                variant="primary"
+                size="lg"
+                className="shadow-lg shadow-primary-500/30"
               >
                 Начать бесплатно
-              </button>
-              <button 
-                className="px-6 py-3 text-base font-semibold bg-transparent text-white hover:bg-white hover:text-gray-900 border-2 border-white rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2"
+              </Button>
+              <button
+                className="inline-flex items-center justify-center rounded-lg border border-white/30 px-6 py-3 text-base font-semibold text-white transition-colors hover:border-white hover:bg-white/10"
                 onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })}
               >
                 Узнать больше
@@ -163,43 +203,23 @@ const AboutSection = ({ onGetStarted }) => {
             </div>
 
             {/* Security Note */}
-            <div className="mt-8 flex items-center justify-center text-sm text-gray-400">
-              <Shield className="h-4 w-4 mr-2" />
+            <div className="mt-8 flex items-center justify-center text-sm text-slate-300">
+              <Shield className="mr-2 h-4 w-4" />
               <span>Облачное хранение с Row Level Security. Надёжная аутентификация через Supabase.</span>
             </div>
           </div>
         </div>
 
         {/* FAQ Preview */}
-        <div className="mt-20 text-center">
-          <h4 className="text-lg font-semibold text-gray-900 mb-4">
-            Частые вопросы
-          </h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left max-w-4xl mx-auto">
-            <div>
-              <h5 className="font-medium text-gray-900 mb-2">Нужна ли регистрация для использования?</h5>
-              <p className="text-sm text-gray-600">
-                Да, нужно создать аккаунт с email и паролем. Это нужно для безопасного хранения ваших данных.
-              </p>
-            </div>
-            <div>
-              <h5 className="font-medium text-gray-900 mb-2">Где хранятся мои данные?</h5>
-              <p className="text-sm text-gray-600">
-                Все данные хранятся в облаке Supabase с автоматической синхронизацией между устройствами.
-              </p>
-            </div>
-            <div>
-              <h5 className="font-medium text-gray-900 mb-2">Какая аналитика доступна?</h5>
-              <p className="text-sm text-gray-600">
-                Месячные и годовые суммы, количество активных подписок, предстоящие платежи и базовая категоризация.
-              </p>
-            </div>
-            <div>
-              <h5 className="font-medium text-gray-900 mb-2">Как работает защита данных?</h5>
-              <p className="text-sm text-gray-600">
-                Используется Row Level Security (RLS) в Supabase, которая гарантирует, что каждый пользователь видит только свои данные.
-              </p>
-            </div>
+        <div className="mt-24 text-center">
+          <h4 className="text-lg font-semibold text-white">Частые вопросы</h4>
+          <div className="mt-8 grid grid-cols-1 gap-6 text-left text-sm text-slate-300 md:grid-cols-2">
+            {faqItems.map((item) => (
+              <div key={item.question} className="rounded-2xl border border-white/10 bg-white/5 p-5">
+                <h5 className="text-base font-medium text-white">{item.question}</h5>
+                <p className="mt-2 text-sm text-slate-300">{item.answer}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

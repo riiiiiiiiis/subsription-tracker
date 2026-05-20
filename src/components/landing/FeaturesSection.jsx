@@ -1,13 +1,11 @@
 import React from 'react';
-import { 
-  CreditCard, 
-  BarChart3, 
-  Bell, 
-  Shield, 
-  Calendar, 
+import {
+  CreditCard,
+  BarChart3,
+  Shield,
   TrendingUp,
   Filter,
-  Smartphone 
+  Smartphone
 } from 'lucide-react';
 
 const FeaturesSection = () => {
@@ -15,77 +13,85 @@ const FeaturesSection = () => {
     {
       icon: CreditCard,
       title: 'Ручное управление подписками',
-      description: 'Легко добавляйте и редактируйте свои подписки вручную с полным контролем над вашими данными.',
-      benefits: ['Добавление названия и стоимости', 'Выбор категории из списка', 'Удаление и редактирование']
+      description: 'Легко добавляйте и редактируйте подписки вручную. Полный контроль над данными без банковских привязок.',
+      benefits: ['Название, стоимость и периодичность', 'Выбор категории и валюты', 'Удаление и редактирование в один клик']
     },
     {
       icon: BarChart3,
       title: 'Простая аналитика',
-      description: 'Получайте базовую статистику о ваших месячных расходах и подписках.',
-      benefits: ['Месячные и годовые суммы', 'Количество активных подписок', 'Предстоящие платежи']
+      description: 'Получайте наглядную статистику расходов, прогнозы и динамику подписок за месяц и год.',
+      benefits: ['Суммы по периодам и категориям', 'Количество активных подписок', 'Сравнение с предыдущими месяцами']
     },
     {
       icon: Filter,
       title: 'Организация данных',
-      description: 'Организуйте свои подписки по категориям и легко находите нужные.',
-      benefits: ['Фильтрация по категориям', 'Поиск по названию', 'Сортировка по разным критериям']
+      description: 'Сортируйте и фильтруйте подписки по категориям, стоимости и дате следующего платежа.',
+      benefits: ['Контроль статуса оплаты', 'Поиск по названию и тегам', 'Гибкая фильтрация по категориям']
     },
     {
       icon: Smartphone,
       title: 'Облачное хранение',
-      description: 'Ваши данные безопасно хранятся в облаке Supabase с автоматической синхронизацией.',
-      benefits: ['Облачная синхронизация', 'Доступ с любых устройств', 'Надёжное хранение в PostgreSQL']
+      description: 'Данные автоматически синхронизируются через Supabase и доступны с любого устройства.',
+      benefits: ['Синхронизация в режиме реального времени', 'Доступ из браузера и мобильного устройства', 'Надёжная инфраструктура PostgreSQL']
     },
     {
       icon: Shield,
       title: 'Безопасная аутентификация',
-      description: 'Система аутентификации на основе Supabase с Row Level Security для защиты данных.',
-      benefits: ['Надёжная аутентификация', 'Изоляция данных по пользователям', 'Полный контроль доступа']
+      description: 'Row Level Security изолирует данные каждого пользователя. Вход только по вашим учетным данным.',
+      benefits: ['Безопасная регистрация', 'Двухфакторную защиту можно подключить', 'Полный контроль доступа']
     }
   ];
 
   return (
-    <section id="features" className="py-20 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="features" className="relative overflow-hidden bg-slate-950 py-24">
+      <div className="pointer-events-none absolute -top-24 left-1/3 h-64 w-64 rounded-full bg-primary-500/20 blur-3xl"></div>
+      <div className="pointer-events-none absolute -bottom-24 right-10 h-72 w-72 rounded-full bg-blue-500/10 blur-[140px]"></div>
+
+      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            Простые функции для управления подписками
+        <div className="mx-auto max-w-3xl text-center">
+          <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate-300">
+            Возможности
+          </span>
+          <h2 className="mt-6 text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+            Всё необходимое для управления подписками
           </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Основные инструменты для ручного учёта и организации ваших регулярных расходов
-            с полным контролем над данными.
-          </p>
+            <p className="mt-4 text-lg leading-relaxed text-slate-300">
+              Соберите в одном месте информацию о сервисах, платежах и категориях. Прозрачная аналитика,
+              уведомления и гибкая фильтрация помогают видеть картину расходов целиком.
+            </p>
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="mt-16 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature, index) => {
             const Icon = feature.icon;
             return (
-              <div 
+              <div
                 key={index}
-                className="bg-white p-6 rounded-xl border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-300 group"
+                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 transition-all duration-300 hover:-translate-y-2 hover:border-white/20 hover:bg-white/10 hover:shadow-xl hover:shadow-primary-500/20"
               >
+                <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-white/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+
                 {/* Icon */}
-                <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center mb-4 group-hover:bg-gray-900 transition-colors">
-                  <Icon className="h-6 w-6 text-gray-600 group-hover:text-white transition-colors" />
+                <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-primary-400/80 to-blue-500/80 text-white shadow-lg shadow-primary-500/30">
+                  <Icon className="h-6 w-6" />
                 </div>
 
                 {/* Content */}
-                <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                <h3 className="relative mt-6 text-xl font-semibold text-white">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 mb-4 leading-relaxed">
+                <p className="relative mt-3 text-sm leading-relaxed text-slate-300">
                   {feature.description}
                 </p>
 
                 {/* Benefits List */}
-                <ul className="space-y-2">
+                <ul className="relative mt-5 space-y-2">
                   {feature.benefits.map((benefit, benefitIndex) => (
-                    <li key={benefitIndex} className="flex items-center text-sm text-gray-500">
-                      <div className="w-1.5 h-1.5 bg-gray-400 rounded-full mr-3"></div>
-                      {benefit}
+                    <li key={benefitIndex} className="flex items-start text-sm text-slate-400">
+                      <span className="mt-1 mr-3 inline-block h-1.5 w-1.5 rounded-full bg-primary-300"></span>
+                      <span>{benefit}</span>
                     </li>
                   ))}
                 </ul>
@@ -95,31 +101,33 @@ const FeaturesSection = () => {
         </div>
 
         {/* Bottom CTA */}
-        <div className="text-center mt-16">
-          <div className="bg-gray-50 rounded-2xl p-8 lg:p-12">
-            <div className="max-w-3xl mx-auto">
-              <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+        <div className="mt-20">
+          <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-900/80 to-slate-900/40 p-10 text-center">
+            <div className="absolute -left-10 top-10 h-32 w-32 rounded-full bg-primary-500/20 blur-3xl"></div>
+            <div className="absolute -right-16 bottom-0 h-40 w-40 rounded-full bg-blue-500/20 blur-[140px]"></div>
+            <div className="relative mx-auto max-w-3xl">
+              <h3 className="text-2xl font-semibold text-white sm:text-3xl">
                 Начните отслеживание сегодня
               </h3>
-              <p className="text-lg text-gray-600 mb-8">
-                Простой способ взять под контроль свои подписки без сложных настроек 
-                и подключения к банковским счетам.
+              <p className="mt-4 text-lg leading-relaxed text-slate-300">
+                Берите управление подписками в свои руки: добавляйте сервисы, получайте напоминания о платежах
+                и наблюдайте за бюджетом в удобной панели.
               </p>
-              
+
               {/* Simple Benefits */}
-              <div className="flex items-center justify-center space-x-8 text-sm text-gray-600 mb-8">
-                <div className="flex items-center">
-                  <Smartphone className="h-4 w-4 mr-2" />
+              <div className="mt-8 flex flex-col items-center justify-center gap-6 text-sm text-slate-300 sm:flex-row sm:gap-10">
+                <div className="flex items-center gap-2">
+                  <Smartphone className="h-4 w-4 text-primary-300" />
                   <span>Облачное хранение</span>
                 </div>
-                <span className="text-gray-400">•</span>
-                <div className="flex items-center">
-                  <Shield className="h-4 w-4 mr-2" />
-                  <span>Безопасная аутентификация</span>
+                <div className="hidden h-2 w-2 rounded-full bg-white/30 sm:block"></div>
+                <div className="flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-blue-300" />
+                  <span>Защита с RLS</span>
                 </div>
-                <span className="text-gray-400">•</span>
-                <div className="flex items-center">
-                  <TrendingUp className="h-4 w-4 mr-2" />
+                <div className="hidden h-2 w-2 rounded-full bg-white/30 sm:block"></div>
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-fuchsia-300" />
                   <span>Простая аналитика</span>
                 </div>
               </div>
